@@ -1,14 +1,24 @@
+/// <reference path="../node_modules/hap-nodejs/index.d.ts" />
+
 let PlatformAccessory: any;
-let Accessory: any;
-let Service: any;
+let Accessory: HAPNodeJS.Accessory;
+let Service: HAPNodeJS.Service;
 // @ts-ignore
-let Characteristic: any; // eslint-disable-line @typescript-eslint/no-unused-vars
-let UUIDGen: any;
+let Characteristic: HAPNodeJS.Characteristic; // eslint-disable-line @typescript-eslint/no-unused-vars
+let UUIDGen: HAPNodeJS.uuid;
 
 const PLUGIN_NAME = "eremote-hub";
 const PLATFORM_NAME = "eRemote";
 
-export const setHomebridgeProperties = ({ hap, platformAccessory }): void => {
+interface Homebridge {
+  hap: HAPNodeJS.HAPNodeJS;
+  platformAccessory: any;
+}
+
+export const setHomebridgeProperties = ({
+  hap,
+  platformAccessory
+}: Homebridge): void => {
   PlatformAccessory = platformAccessory;
   /* eslint-disable prefer-destructuring */
   Accessory = hap.Accessory;
