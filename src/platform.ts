@@ -1,11 +1,7 @@
 /// <reference path="../node_modules/hap-nodejs/index.d.ts" />
 
-let PlatformAccessory: any;
-let Accessory: HAPNodeJS.Accessory;
-let Service: HAPNodeJS.Service;
-// @ts-ignore
-let Characteristic: HAPNodeJS.Characteristic; // eslint-disable-line @typescript-eslint/no-unused-vars
-let UUIDGen: HAPNodeJS.uuid;
+import { initializeAccessoryFactory } from "./accessories";
+import Switch from "./accessories/switch";
 
 const PLUGIN_NAME = "eremote-hub";
 const PLATFORM_NAME = "eRemote";
@@ -19,13 +15,13 @@ export const setHomebridgeProperties = ({
   hap,
   platformAccessory
 }: Homebridge): void => {
-  PlatformAccessory = platformAccessory;
-  /* eslint-disable prefer-destructuring */
-  Accessory = hap.Accessory;
-  Service = hap.Service;
-  Characteristic = hap.Characteristic;
-  UUIDGen = hap.uuid;
-  /* eslint-enable prefer-destructuring */
+  initializeAccessoryFactory(
+    platformAccessory,
+    hap.Accessory,
+    hap.Service,
+    hap.Characteristic,
+    hap.uuid
+  );
 };
 
 type Accessory = any;
@@ -56,20 +52,11 @@ export class ERemotePlatform {
   private addAccessory({ name }): void {
     this.log(`Adding accessory '${name}'...`);
     if (!this.accessories.has(name)) {
-      const uuid = UUIDGen.generate(name);
-      const accessory = new PlatformAccessory(
-        name,
-        uuid,
-        Accessory.Categories.SWITCH
-      );
-
-      accessory.addService(Service.Switch, name);
-      accessory.reachable = true;
-
+      const acc = new Switch(name, this.log);
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
-        accessory
+        acc.currentAccessory
       ]);
-      this.accessories.set(name, accessory);
+      this.accessories.set(name, acc.currentAccessory);
     }
   }
 
