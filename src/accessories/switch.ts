@@ -12,7 +12,7 @@ export default class Switch extends BaseAccessory {
       accessory
     );
 
-    this.accessory.currentState = false;
+    this.accessory.context.currentState = false;
 
     this.setService();
   }

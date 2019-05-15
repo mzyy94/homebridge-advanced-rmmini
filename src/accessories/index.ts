@@ -1,5 +1,6 @@
 // eslint-disable-next-line spaced-comment, @typescript-eslint/no-triple-slash-reference
 /// <reference path="../../node_modules/hap-nodejs/index.d.ts" />
+// / <reference path="../homebridge.d.ts" />
 
 export interface AccessoryConfig {
   name: string;
@@ -21,26 +22,26 @@ export class BaseAccessory {
 
   protected log: Function;
 
-  protected accessory: any;
+  protected accessory: Homebridge.PlatformAccessory;
 
   public constructor(
     name: string,
     log: Function,
     typeCode?: number,
     service?: HAPNodeJS.PredefinedService,
-    accessory?: any
+    accessory?: Homebridge.PlatformAccessory
   ) {
     this.log = log;
     if (accessory) {
       this.accessory = accessory;
-    } else {
+    } else if (!!typeCode && !!service) {
       const uuid = BaseAccessory.UUIDGen.generate(name);
       this.accessory = new BaseAccessory.PlatformAccessory(
         name,
         uuid,
         typeCode
       );
-      this.accessory.addService(service, name);
+      this.accessory.addService(service);
       this.accessory.reachable = true;
       this.accessory.context.name = name;
     }
