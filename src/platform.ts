@@ -1,3 +1,5 @@
+import * as Broadlink from "broadlinkjs-rm";
+
 import {
   AccessoryTools,
   createAccessory,
@@ -30,6 +32,10 @@ export class ERemotePlatform {
 
   private config: any;
 
+  private broadlink: any;
+
+  private pingIntervals: Map<string, NodeJS.Timer>;
+
   public constructor(log: any, config: any, api: any) {
     this.log = log;
     this.config = config;
@@ -37,6 +43,27 @@ export class ERemotePlatform {
 
     this.api = api;
     this.api.on("didFinishLaunching", this.didFinishLaunching.bind(this));
+
+    this.pingIntervals = new Map();
+    this.broadlink = new Broadlink();
+    this.broadlink.discover();
+
+    this.broadlink.on(
+      "deviceReady",
+      (device): void => {
+        this.log(`Discovered ${device.model} (${device.host.address})`);
+
+        const macAddress = device.mac.toString();
+        const interval = this.pingIntervals.get(macAddress);
+        if (interval) {
+          clearInterval(interval);
+        }
+        this.pingIntervals.set(
+          macAddress,
+          setInterval(device.checkTemperature.bind(device), 5000)
+        );
+      }
+    );
   }
 
   public configureAccessory(accessory: Homebridge.PlatformAccessory): void {

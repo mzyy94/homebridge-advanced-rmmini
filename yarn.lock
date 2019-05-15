@@ -23,6 +23,11 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.0.0.tgz#d11813b9c0ff8aaca29f04cbc12817f4c7d656e5"
   integrity sha512-Jrb/x3HT4PTJp6a4avhmJCDEVrPdqLfl3e8GGMbpkGGdwAV5UGlIs4vVEfsHHfylZVOKZWpOqmqFH8CbfOZ6kg==
 
+"@types/node@^7.0.5":
+  version "7.10.6"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.10.6.tgz#c42137f0f2f6458bf0c898d65f48c5f600911475"
+  integrity sha512-d0BOAicT0tEdbdVQlLGOVul1kvg6YvbaADRCThGCz5NJ0e9r00SofcR1x69hmlCyrHuB6jd4cKzL9bMLjPnpAA==
+
 "@typescript-eslint/eslint-plugin@^1.7.0":
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-1.7.0.tgz#570e45dc84fb97852e363f1e00f47e604a0b8bcc"
@@ -143,6 +148,13 @@ brace-expansion@^1.1.7:
   dependencies:
     balanced-match "^1.0.0"
     concat-map "0.0.1"
+
+broadlinkjs-rm@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/broadlinkjs-rm/-/broadlinkjs-rm-0.6.0.tgz#f173b87b8641657fcd830af368419da90f16bf7c"
+  integrity sha512-1Qc7mvFYF1q+OzmnrFb2DlV7PZvNrV8Z8hL4WaxCap+FxsHROZ9m0hhqYuS3dh2fozjBf+ci3Va+QCmm7LOXcw==
+  dependencies:
+    "@types/node" "^7.0.5"
 
 buffer-indexof@^1.0.0:
   version "1.1.1"

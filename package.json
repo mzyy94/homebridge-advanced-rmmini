@@ -36,5 +36,8 @@
     "hap-nodejs": "^0.4.51",
     "prettier": "^1.17.0",
     "typescript": "^3.4.5"
+  },
+  "dependencies": {
+    "broadlinkjs-rm": "^0.6.0"
   }
 }
