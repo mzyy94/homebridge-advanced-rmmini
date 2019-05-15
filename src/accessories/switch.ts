@@ -1,12 +1,13 @@
-import { BaseAccessory } from "./index";
+import { AccessoryConfig, AccessoryTools } from ".";
+import BaseAccessory from "./base";
 
 export default class Switch extends BaseAccessory {
-  public constructor(name: string, log: Function, accessory?: any) {
+  public constructor(config: AccessoryConfig, log: Function, accessory?: any) {
     super(
-      name,
+      config,
       log,
-      BaseAccessory.Accessory.Categories.SWITCH,
-      BaseAccessory.Service.Switch,
+      AccessoryTools.Accessory.Categories.SWITCH,
+      AccessoryTools.Service.Switch,
       accessory
     );
 
@@ -17,8 +18,8 @@ export default class Switch extends BaseAccessory {
 
   private setService(): void {
     this.accessory
-      .getService(BaseAccessory.Service.Switch)
-      .getCharacteristic(BaseAccessory.Characteristic.On)
+      .getService(AccessoryTools.Service.Switch)
+      .getCharacteristic(AccessoryTools.Characteristic.On)
       .on("get", this.onGetState.bind(this))
       .on("set", this.onSetState.bind(this));
 

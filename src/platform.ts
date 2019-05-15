@@ -1,6 +1,9 @@
-import { initializeAccessoryFactory, BaseAccessory } from "./accessories";
-
-import Switch from "./accessories/switch";
+import {
+  AccessoryTools,
+  createAccessory,
+  AccessoryConfig
+} from "./accessories";
+import BaseAccessory from "./accessories/base";
 
 const PLUGIN_NAME = "eremote-hub";
 const PLATFORM_NAME = "eRemote";
@@ -9,7 +12,7 @@ export const setHomebridgeProperties = ({
   hap,
   platformAccessory
 }: Homebridge.Homebridge): void => {
-  initializeAccessoryFactory(
+  AccessoryTools.initialize(
     platformAccessory,
     hap.Accessory,
     hap.Service,
@@ -37,17 +40,18 @@ export class ERemotePlatform {
   }
 
   public configureAccessory(accessory: Homebridge.PlatformAccessory): void {
-    const acc = new Switch(accessory.context.name, this.log, accessory);
+    const acc = createAccessory(accessory.context.config, this.log, accessory);
     this.accessories.set(accessory.context.name, acc);
   }
 
   // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
   public configurationRequestHandler(_context, _request, _callback): void {}
 
-  private addAccessory({ name }): void {
+  private addAccessory(config: AccessoryConfig): void {
+    const { name } = config;
     this.log(`Adding accessory '${name}'...`);
     if (!this.accessories.has(name)) {
-      const acc = new Switch(name, this.log);
+      const acc = createAccessory(config, this.log);
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
         acc.currentAccessory
       ]);
@@ -60,8 +64,9 @@ export class ERemotePlatform {
 
   private didFinishLaunching(): void {
     this.log("didFinishLaunching");
-    const sampleAccessory = {
-      name: "sample"
+    const sampleAccessory: AccessoryConfig = {
+      name: "sample",
+      type: "switch"
     };
     this.addAccessory(sampleAccessory);
   }
