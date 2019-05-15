@@ -1,12 +1,12 @@
 import { AccessoryConfig, AccessoryTools } from ".";
 
-export default class BaseAccessory {
+export default class BaseAccessory<T extends AccessoryConfig> {
   protected log: Function;
 
   protected accessory: Homebridge.PlatformAccessory;
 
   public constructor(
-    config: AccessoryConfig,
+    config: T,
     log: Function,
     typeCode?: number,
     service?: HAPNodeJS.PredefinedService,

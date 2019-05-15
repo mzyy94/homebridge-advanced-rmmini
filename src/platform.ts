@@ -4,6 +4,7 @@ import {
   AccessoryConfig
 } from "./accessories";
 import BaseAccessory from "./accessories/base";
+import { SwitchConfig } from "./accessories/switch";
 
 const PLUGIN_NAME = "eremote-hub";
 const PLATFORM_NAME = "eRemote";
@@ -24,7 +25,7 @@ export const setHomebridgeProperties = ({
 export class ERemotePlatform {
   private log: any;
 
-  private accessories: Map<string, BaseAccessory>;
+  private accessories: Map<string, BaseAccessory<AccessoryConfig>>;
 
   private api: any;
 
@@ -60,7 +61,7 @@ export class ERemotePlatform {
     }
   }
 
-  private removeAccessory(accessory: BaseAccessory): void {
+  private removeAccessory(accessory: BaseAccessory<AccessoryConfig>): void {
     this.log(
       `Removing accessory ${accessory.currentAccessory.context.name}...`
     );
@@ -71,9 +72,14 @@ export class ERemotePlatform {
 
   private didFinishLaunching(): void {
     this.log("didFinishLaunching");
-    const sampleAccessory: AccessoryConfig = {
+    const sampleAccessory: SwitchConfig = {
       name: "sample",
-      type: "switch"
+      type: "switch",
+      mode: "raw",
+      code: {
+        on: "000001",
+        off: "000000"
+      }
     };
     this.addAccessory(sampleAccessory);
 

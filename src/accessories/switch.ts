@@ -1,8 +1,15 @@
 import { AccessoryConfig, AccessoryTools } from ".";
 import BaseAccessory from "./base";
 
-export default class Switch extends BaseAccessory {
-  public constructor(config: AccessoryConfig, log: Function, accessory?: any) {
+export interface SwitchConfig extends AccessoryConfig {
+  type: "switch";
+  code: {
+    on: string;
+    off: string;
+  };
+}
+export default class Switch extends BaseAccessory<SwitchConfig> {
+  public constructor(config: SwitchConfig, log: Function, accessory?: any) {
     super(
       config,
       log,
