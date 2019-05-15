@@ -4,7 +4,6 @@ import {
   AccessoryConfig
 } from "./accessories";
 import BaseAccessory from "./accessories/base";
-import { SwitchConfig } from "./accessories/switch";
 
 const PLUGIN_NAME = "eremote-hub";
 const PLATFORM_NAME = "eRemote";
@@ -29,9 +28,11 @@ export class ERemotePlatform {
 
   private api: any;
 
-  public constructor(log: any, _config: any, api: any) {
-    this.log = log;
+  private config: any;
 
+  public constructor(log: any, config: any, api: any) {
+    this.log = log;
+    this.config = config;
     this.accessories = new Map();
 
     this.api = api;
@@ -72,16 +73,7 @@ export class ERemotePlatform {
 
   private didFinishLaunching(): void {
     this.log("didFinishLaunching");
-    const sampleAccessory: SwitchConfig = {
-      name: "sample",
-      type: "switch",
-      mode: "raw",
-      code: {
-        on: "000001",
-        off: "000000"
-      }
-    };
-    this.addAccessory(sampleAccessory);
+    this.config.accessories.forEach(this.addAccessory.bind(this));
 
     [...this.accessories.values()].forEach(
       (accessory): void => {
