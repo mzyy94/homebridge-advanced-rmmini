@@ -1,7 +1,7 @@
 /// <reference path="../node_modules/hap-nodejs/index.d.ts" />
 
 import { initializeAccessoryFactory } from "./accessories";
-import {BaseAccessory} from './accessories'
+import { BaseAccessory } from "./accessories";
 import Switch from "./accessories/switch";
 
 const PLUGIN_NAME = "eremote-hub";

@@ -1,6 +1,7 @@
 // eslint-disable-next-line spaced-comment, @typescript-eslint/no-triple-slash-reference
 /// <reference path="../../node_modules/hap-nodejs/index.d.ts" />
-// / <reference path="../homebridge.d.ts" />
+// eslint-disable-next-line spaced-comment, @typescript-eslint/no-triple-slash-reference
+/// <reference path="../homebridge.d.ts" />
 
 export interface AccessoryConfig {
   name: string;

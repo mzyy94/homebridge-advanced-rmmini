@@ -1,5 +1,3 @@
-// / <reference path="../../node_modules/hap-nodejs/index.d.ts" />
-
 import { BaseAccessory } from "./index";
 
 export default class Switch extends BaseAccessory {
