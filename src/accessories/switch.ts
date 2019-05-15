@@ -3,12 +3,13 @@
 import { BaseAccessory } from "./index";
 
 export default class Switch extends BaseAccessory {
-  public constructor(name: string, log: Function) {
+  public constructor(name: string, log: Function, accessory?: any) {
     super(
       name,
+      log,
       BaseAccessory.Accessory.Categories.SWITCH,
       BaseAccessory.Service.Switch,
-      log
+      accessory
     );
 
     this.accessory.currentState = false;

@@ -25,18 +25,25 @@ export class BaseAccessory {
 
   public constructor(
     name: string,
-    typeCode: number,
-    service: HAPNodeJS.PredefinedService,
-    log: Function
+    log: Function,
+    typeCode?: number,
+    service?: HAPNodeJS.PredefinedService,
+    accessory?: any
   ) {
     this.log = log;
-    const uuid = BaseAccessory.UUIDGen.generate(name);
-    const accessory = new BaseAccessory.PlatformAccessory(name, uuid, typeCode);
-
-    accessory.addService(service, name);
-    accessory.reachable = true;
-    accessory.context.name = name;
-    this.accessory = accessory;
+    if (accessory) {
+      this.accessory = accessory;
+    } else {
+      const uuid = BaseAccessory.UUIDGen.generate(name);
+      this.accessory = new BaseAccessory.PlatformAccessory(
+        name,
+        uuid,
+        typeCode
+      );
+      this.accessory.addService(service, name);
+      this.accessory.reachable = true;
+      this.accessory.context.name = name;
+    }
   }
 
   public get currentAccessory(): any {

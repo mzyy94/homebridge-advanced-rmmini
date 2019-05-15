@@ -1,6 +1,7 @@
 /// <reference path="../node_modules/hap-nodejs/index.d.ts" />
 
 import { initializeAccessoryFactory } from "./accessories";
+import {BaseAccessory} from './accessories'
 import Switch from "./accessories/switch";
 
 const PLUGIN_NAME = "eremote-hub";
@@ -24,12 +25,12 @@ export const setHomebridgeProperties = ({
   );
 };
 
-type Accessory = any;
+type HomebridgeAccessory = any;
 
 export class ERemotePlatform {
   private log: any;
 
-  private accessories: Map<string, Accessory>;
+  private accessories: Map<string, BaseAccessory>;
 
   private api: any;
 
@@ -42,8 +43,9 @@ export class ERemotePlatform {
     this.api.on("didFinishLaunching", this.didFinishLaunching.bind(this));
   }
 
-  public configureAccessory(accessory: Accessory): void {
-    this.accessories.set(accessory.context.name, accessory);
+  public configureAccessory(accessory: HomebridgeAccessory): void {
+    const acc = new Switch(accessory.context.name, this.log, accessory);
+    this.accessories.set(accessory.context.name, acc);
   }
 
   // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
@@ -56,12 +58,12 @@ export class ERemotePlatform {
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
         acc.currentAccessory
       ]);
-      this.accessories.set(name, acc.currentAccessory);
+      this.accessories.set(name, acc);
     }
   }
 
   // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
-  public removeAccessory(_accessory: Accessory): void {}
+  public removeAccessory(_accessory: HomebridgeAccessory): void {}
 
   private didFinishLaunching(): void {
     this.log("didFinishLaunching");
