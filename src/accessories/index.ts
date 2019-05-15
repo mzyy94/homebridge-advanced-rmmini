@@ -1,8 +1,3 @@
-// eslint-disable-next-line spaced-comment, @typescript-eslint/no-triple-slash-reference
-/// <reference path="../../node_modules/hap-nodejs/index.d.ts" />
-// eslint-disable-next-line spaced-comment, @typescript-eslint/no-triple-slash-reference
-/// <reference path="../homebridge.d.ts" />
-
 export interface AccessoryConfig {
   name: string;
   type: "switch";
@@ -15,10 +10,8 @@ export class BaseAccessory {
 
   public static Service: HAPNodeJS.Service;
 
-  // @ts-ignore
   public static Characteristic: HAPNodeJS.Characteristic;
 
-  // eslint-disable-line @typescript-eslint/no-unused-vars
   public static UUIDGen: HAPNodeJS.uuid;
 
   protected log: Function;

@@ -1,6 +1,3 @@
-// eslint-disable-next-line spaced-comment, @typescript-eslint/no-triple-slash-reference
-/// <reference path="../node_modules/hap-nodejs/index.d.ts" />
-
 import { initializeAccessoryFactory, BaseAccessory } from "./accessories";
 
 import Switch from "./accessories/switch";
@@ -8,15 +5,10 @@ import Switch from "./accessories/switch";
 const PLUGIN_NAME = "eremote-hub";
 const PLATFORM_NAME = "eRemote";
 
-interface Homebridge {
-  hap: HAPNodeJS.HAPNodeJS;
-  platformAccessory: any;
-}
-
 export const setHomebridgeProperties = ({
   hap,
   platformAccessory
-}: Homebridge): void => {
+}: Homebridge.Homebridge): void => {
   initializeAccessoryFactory(
     platformAccessory,
     hap.Accessory,
@@ -44,7 +36,7 @@ export class ERemotePlatform {
     this.api.on("didFinishLaunching", this.didFinishLaunching.bind(this));
   }
 
-  public configureAccessory(accessory: HomebridgeAccessory): void {
+  public configureAccessory(accessory: Homebridge.PlatformAccessory): void {
     const acc = new Switch(accessory.context.name, this.log, accessory);
     this.accessories.set(accessory.context.name, acc);
   }
