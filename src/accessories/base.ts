@@ -1,4 +1,5 @@
 import { AccessoryConfig, AccessoryTools } from ".";
+import sendData from "../remote";
 
 export default class BaseAccessory<T extends AccessoryConfig> {
   protected log: Function;
@@ -14,7 +15,6 @@ export default class BaseAccessory<T extends AccessoryConfig> {
   public constructor(
     config: T,
     log: Function,
-    sendData: Function,
     typeCode?: number,
     service?: HAPNodeJS.PredefinedService,
     accessory?: Homebridge.PlatformAccessory

@@ -25,16 +25,10 @@ export default class Switch extends BaseAccessory<SwitchConfig>
     this.context.currentState = state;
   }
 
-  public constructor(
-    config: SwitchConfig,
-    log: Function,
-    sendData: Function,
-    accessory?: any
-  ) {
+  public constructor(config: SwitchConfig, log: Function, accessory?: any) {
     super(
       config,
       log,
-      sendData,
       AccessoryTools.Accessory.Categories.SWITCH,
       AccessoryTools.Service.Switch,
       accessory
