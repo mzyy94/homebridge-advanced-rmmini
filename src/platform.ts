@@ -21,8 +21,6 @@ export const setHomebridgeProperties = ({
   );
 };
 
-type HomebridgeAccessory = any;
-
 export class ERemotePlatform {
   private log: any;
 
@@ -56,11 +54,20 @@ export class ERemotePlatform {
         acc.currentAccessory
       ]);
       this.accessories.set(name, acc);
+    } else {
+      const acc = this.accessories.get(name);
+      if (acc) acc.currentAccessory.updateReachability(true);
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
-  public removeAccessory(_accessory: HomebridgeAccessory): void {}
+  private removeAccessory(accessory: BaseAccessory): void {
+    this.log(
+      `Removing accessory ${accessory.currentAccessory.context.name}...`
+    );
+    this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
+      accessory.currentAccessory
+    ]);
+  }
 
   private didFinishLaunching(): void {
     this.log("didFinishLaunching");
@@ -69,5 +76,12 @@ export class ERemotePlatform {
       type: "switch"
     };
     this.addAccessory(sampleAccessory);
+
+    [...this.accessories.values()].forEach(
+      (accessory): void => {
+        if (!accessory.currentAccessory.reachable)
+          this.removeAccessory(accessory);
+      }
+    );
   }
 }
