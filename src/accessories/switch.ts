@@ -25,10 +25,16 @@ export default class Switch extends BaseAccessory<SwitchConfig>
     this.context.currentState = state;
   }
 
-  public constructor(config: SwitchConfig, log: Function, accessory?: any) {
+  public constructor(
+    config: SwitchConfig,
+    log: Function,
+    sendData: Function,
+    accessory?: any
+  ) {
     super(
       config,
       log,
+      sendData,
       AccessoryTools.Accessory.Categories.SWITCH,
       AccessoryTools.Service.Switch,
       accessory
@@ -59,6 +65,12 @@ export default class Switch extends BaseAccessory<SwitchConfig>
 
   private onSetState(state, callback): void {
     this.log(`${this.name} set state: ${this.currentState} => ${state}`);
+    if (state === true) {
+      this.sendData("on");
+    } else {
+      this.sendData("off");
+    }
+
     this.currentState = state;
     callback(null, this.currentState);
   }

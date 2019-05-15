@@ -5,16 +5,18 @@ export interface AccessoryConfig {
   name: string;
   type: "switch";
   mode: "raw";
+  code: object;
 }
 
 export const createAccessory = (
   config: AccessoryConfig,
   log: Function,
+  sendData: Function,
   accessory?: Homebridge.PlatformAccessory
 ): BaseAccessory<AccessoryConfig> => {
   switch (config.type) {
     case "switch":
-      return new Switch(config as SwitchConfig, log, accessory);
+      return new Switch(config as SwitchConfig, log, sendData, accessory);
     default:
       throw new TypeError("Invalid type of accessory");
   }

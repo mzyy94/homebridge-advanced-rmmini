@@ -3,6 +3,8 @@ import { AccessoryConfig, AccessoryTools } from ".";
 export default class BaseAccessory<T extends AccessoryConfig> {
   protected log: Function;
 
+  protected sendData: Function;
+
   protected accessory: Homebridge.PlatformAccessory;
 
   protected get name(): string {
@@ -12,11 +14,18 @@ export default class BaseAccessory<T extends AccessoryConfig> {
   public constructor(
     config: T,
     log: Function,
+    sendData: Function,
     typeCode?: number,
     service?: HAPNodeJS.PredefinedService,
     accessory?: Homebridge.PlatformAccessory
   ) {
     this.log = log;
+    this.sendData = (param: string): void => {
+      const code = config.code[param];
+      const data = Buffer.from(code, "hex");
+      sendData(data);
+    };
+
     if (accessory) {
       this.accessory = accessory;
     } else if (!!typeCode && !!service) {

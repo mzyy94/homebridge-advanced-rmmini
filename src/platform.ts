@@ -67,18 +67,30 @@ export class ERemotePlatform {
   }
 
   public configureAccessory(accessory: Homebridge.PlatformAccessory): void {
-    const acc = createAccessory(accessory.context.config, this.log, accessory);
+    const acc = createAccessory(
+      accessory.context.config,
+      this.log,
+      this.sendData.bind(this),
+      accessory
+    );
     this.accessories.set(accessory.context.name, acc);
   }
 
   // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
   public configurationRequestHandler(_context, _request, _callback): void {}
 
+  private sendData(data: Buffer): void {
+    const device = Object.values<any>(this.broadlink.devices)[0];
+    if (device) {
+      device.sendData(data);
+    }
+  }
+
   private addAccessory(config: AccessoryConfig): void {
     const { name } = config;
     this.log(`Adding accessory '${name}'...`);
     if (!this.accessories.has(name)) {
-      const acc = createAccessory(config, this.log);
+      const acc = createAccessory(config, this.log, this.sendData.bind(this));
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
         acc.currentAccessory
       ]);
