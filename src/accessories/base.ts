@@ -5,6 +5,10 @@ export default class BaseAccessory<T extends AccessoryConfig> {
 
   protected accessory: Homebridge.PlatformAccessory;
 
+  protected get name(): string {
+    return this.accessory.context.name;
+  }
+
   public constructor(
     config: T,
     log: Function,

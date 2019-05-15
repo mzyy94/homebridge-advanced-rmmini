@@ -8,7 +8,23 @@ export interface SwitchConfig extends AccessoryConfig {
     off: string;
   };
 }
-export default class Switch extends BaseAccessory<SwitchConfig> {
+
+interface Context {
+  currentState: boolean;
+}
+
+export default class Switch extends BaseAccessory<SwitchConfig>
+  implements Context {
+  private context: Context;
+
+  public get currentState(): boolean {
+    return this.context.currentState;
+  }
+
+  public set currentState(state) {
+    this.context.currentState = state;
+  }
+
   public constructor(config: SwitchConfig, log: Function, accessory?: any) {
     super(
       config,
@@ -17,8 +33,11 @@ export default class Switch extends BaseAccessory<SwitchConfig> {
       AccessoryTools.Service.Switch,
       accessory
     );
+    this.context = this.accessory.context;
 
-    this.accessory.context.currentState = false;
+    if (!accessory) {
+      this.currentState = false;
+    }
 
     this.setService();
   }
@@ -34,26 +53,18 @@ export default class Switch extends BaseAccessory<SwitchConfig> {
   }
 
   private onGetState(callback): void {
-    this.log(
-      `${this.accessory.context.name} get state: ${
-        this.accessory.context.currentState
-      }`
-    );
-    callback(null, this.accessory.context.currentState);
+    this.log(`${this.name} get state: ${this.currentState}`);
+    callback(null, this.currentState);
   }
 
   private onSetState(state, callback): void {
-    this.log(
-      `${this.accessory.context.name} set state: ${
-        this.accessory.context.currentState
-      } => ${state}`
-    );
-    this.accessory.context.currentState = state;
-    callback(null, this.accessory.context.currentState);
+    this.log(`${this.name} set state: ${this.currentState} => ${state}`);
+    this.currentState = state;
+    callback(null, this.currentState);
   }
 
   private onIdentify(paired, callback): void {
-    this.log(`${this.accessory.context.name} identify requested: ${paired}`);
+    this.log(`${this.name} identify requested: ${paired}`);
     callback();
   }
 }
