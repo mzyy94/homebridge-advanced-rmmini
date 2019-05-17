@@ -34,7 +34,36 @@ export class Pulse extends P {
 }
 
 export class Frame extends F<Pulse> {
-  public constructor(buffer: Buffer, gap = 239) {
+  private data: Buffer;
+
+  private get gap(): number {
+    return this[this.length - 1].width.low;
+  }
+
+  public constructor(buffer: Buffer, gap = 239, pulseArray?: Pulse[]) {
+    if (pulseArray) {
+      super(pulseArray);
+
+      const bitArray: Pulse[][] = [];
+      pulseArray.shift();
+      while (pulseArray.length > 0) {
+        bitArray.push(pulseArray.splice(0, 8));
+      }
+      bitArray.pop();
+      const byteArray = bitArray
+        .map(
+          (bits): number[] =>
+            bits.map(
+              ({ width: { high, low } }): number =>
+                high === 1 && low === 3 ? 1 : 0
+            )
+        )
+        .map((bits): string => bits.reverse().join(""))
+        .map((bits): number => parseInt(bits, 2));
+      this.data = Buffer.from(byteArray);
+      return;
+    }
+
     const leader = Pulse.fromWidth(8, 4);
 
     const pulse = [leader];
@@ -53,11 +82,11 @@ export class Frame extends F<Pulse> {
     pulse.push(trailer);
 
     super(pulse);
-    this.buffer = buffer;
+    this.data = buffer;
   }
 
   public get customerCode(): Buffer {
-    const data = this.buffer;
+    const { data } = this;
     /* eslint-disable no-bitwise */
     let parity = data.readUInt8(2) & 0x0f;
     parity ^= data.readUInt8(0) >> 4;
@@ -73,19 +102,14 @@ export class Frame extends F<Pulse> {
   }
 
   public get payload(): Buffer {
-    const data = this.buffer.slice(2);
-    return data;
+    return this.data.slice(2);
   }
 
-  public toJSON(space = 2): string {
-    return JSON.stringify(
-      {
-        customerCode: this.customerCode.toString("hex"),
-        data: this.buffer.toString("hex")
-      },
-      null,
-      space
-    );
+  public toFrameData(): object {
+    return {
+      data: this.data.toString("hex"),
+      gap: this.gap
+    };
   }
 }
 
@@ -97,10 +121,10 @@ export interface FrameData {
 export class AEHA {
   private frames: Frame[];
 
-  public constructor(data: FrameData[]) {
-    this.frames = data.map(
-      (d): Frame => new Frame(Buffer.from(d.data, "hex"), d.gap)
-    );
+  public constructor(data: FrameData[], frames?: Frame[]) {
+    this.frames =
+      frames ||
+      data.map((d): Frame => new Frame(Buffer.from(d.data, "hex"), d.gap));
   }
 
   public toSendData(): Buffer {
@@ -109,5 +133,44 @@ export class AEHA {
       .reduce((result, current): Buffer => Buffer.concat([result, current]));
     const { buffer } = new BroadlinkData(data);
     return buffer;
+  }
+
+  public toFrameData(): object[] {
+    return this.frames.map((frame): object => frame.toFrameData());
+  }
+
+  public static fromSendData(data: string): AEHA {
+    const buffer = Buffer.from(data, "hex");
+    const main = buffer.subarray(4, buffer.readUInt8(2) + 4);
+    const numArray: number[] = [];
+    for (let i = 0; i < main.byteLength; i += 1) {
+      const value = main.readUInt8(i);
+      if (value > 0) {
+        numArray.push(value);
+      } else {
+        numArray.push(main.readUInt16BE(i + 1));
+        i += 2;
+      }
+    }
+
+    const pulseArray: Pulse[] = numArray.reduce(
+      (result: Pulse[], current, i, array): Pulse[] => {
+        if (i % 2 === 0) result.push(new Pulse(current, array[i + 1]));
+        return result;
+      },
+      []
+    );
+    const frames: Frame[] = [];
+
+    while (pulseArray.length > 0) {
+      const trailerIndex = pulseArray.findIndex(
+        (p: Pulse): boolean => p.width.high === 1 && p.width.low > 4
+      );
+      frames.push(
+        new Frame(Buffer.alloc(0), 0, pulseArray.splice(0, trailerIndex + 1))
+      );
+    }
+
+    return new AEHA([], frames);
   }
 }
