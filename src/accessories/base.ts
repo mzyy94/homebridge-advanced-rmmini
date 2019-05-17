@@ -1,4 +1,5 @@
-import { AccessoryConfig, AccessoryTools } from ".";
+import { AccessoryTools } from ".";
+import { AccessoryConfig } from "../config";
 import sendData from "../remote";
 
 export default class BaseAccessory<T extends AccessoryConfig> {

@@ -1,4 +1,6 @@
 import { Frame as F, Pulse as P, BroadlinkData } from "./code";
+import { FrameData } from "../config";
+
 // https://github.com/mjg59/python-broadlink/blob/master/protocol.md#sending-data
 const FREQUENCY = 268.85 / 8192; // GHz
 
@@ -111,11 +113,6 @@ export class Frame extends F<Pulse> {
       gap: this.gap
     };
   }
-}
-
-export interface FrameData {
-  data: string;
-  gap?: number;
 }
 
 export class AEHA {

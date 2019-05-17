@@ -1,5 +1,6 @@
 import test, { ExecutionContext } from "ava";
-import { AEHA, FrameData } from "../aeha";
+import { FrameData } from "../../config";
+import { AEHA } from "../aeha";
 
 test(
   "Convert to send data from AEHA frame data",

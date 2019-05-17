@@ -1,12 +1,6 @@
 import BaseAccessory from "./base";
+import { AccessoryConfig } from "../config";
 import Switch, { SwitchConfig } from "./switch";
-
-export interface AccessoryConfig {
-  name: string;
-  type: "switch";
-  mode: "raw";
-  code: object;
-}
 
 export const createAccessory = (
   config: AccessoryConfig,

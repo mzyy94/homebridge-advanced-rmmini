@@ -1,4 +1,5 @@
-import { AccessoryConfig, AccessoryTools } from ".";
+import { AccessoryTools } from ".";
+import { AccessoryConfig } from "../config";
 import BaseAccessory from "./base";
 
 export interface SwitchConfig extends AccessoryConfig {

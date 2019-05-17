@@ -1,8 +1,5 @@
-import {
-  AccessoryTools,
-  createAccessory,
-  AccessoryConfig
-} from "./accessories";
+import { AccessoryTools, createAccessory } from "./accessories";
+import { AccessoryConfig } from "./config";
 import BaseAccessory from "./accessories/base";
 
 const PLUGIN_NAME = "eremote-hub";
