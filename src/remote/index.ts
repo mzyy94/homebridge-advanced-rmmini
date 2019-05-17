@@ -1,4 +1,6 @@
 import * as Broadlink from "broadlinkjs-rm";
+import { FrameData } from "../config";
+import { AEHA } from "./aeha";
 
 const broadlink: any = new Broadlink();
 
@@ -26,7 +28,15 @@ const initialize = (): void => {
 
 initialize();
 
-export default (data: Buffer): void => {
+export default (code: string | FrameData[]): void => {
+  let data: Buffer;
+  if (typeof code === "string") {
+    data = Buffer.from(code, "hex");
+  } else {
+    const frameData = code as FrameData[];
+    const aeha = new AEHA(frameData);
+    data = aeha.toSendData();
+  }
   const device = Object.values<any>(broadlink.devices)[0];
   if (device) {
     device.sendData(data);
