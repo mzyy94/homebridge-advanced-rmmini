@@ -5,6 +5,11 @@ export interface FrameData {
 
 export type Code = string | FrameData;
 
+export interface CommonConfig {
+  name: string;
+  mode: "raw" | "aeha";
+}
+
 export interface Switch {
   type: "switch";
   code: {
@@ -13,9 +18,8 @@ export interface Switch {
   };
 }
 
+export type SwitchConfig = CommonConfig & Switch;
+
 export type Accessories = Switch;
 
-export type AccessoryConfig = Accessories & {
-  name: string;
-  mode: "raw" | "aeha";
-};
+export type AccessoryConfig = CommonConfig & Accessories;

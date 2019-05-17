@@ -1,14 +1,6 @@
 import { AccessoryTools } from ".";
-import { AccessoryConfig } from "../config";
+import { SwitchConfig } from "../config";
 import BaseAccessory from "./base";
-
-export interface SwitchConfig extends AccessoryConfig {
-  type: "switch";
-  code: {
-    on: string;
-    off: string;
-  };
-}
 
 interface Context {
   currentState: boolean;

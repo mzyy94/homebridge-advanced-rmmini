@@ -1,6 +1,6 @@
 import BaseAccessory from "./base";
-import { AccessoryConfig } from "../config";
-import Switch, { SwitchConfig } from "./switch";
+import { AccessoryConfig, SwitchConfig } from "../config";
+import Switch from "./switch";
 
 export const createAccessory = (
   config: AccessoryConfig,
@@ -14,14 +14,6 @@ export const createAccessory = (
       throw new TypeError("Invalid type of accessory");
   }
 };
-
-/*
-declare let PlatformAccessory: any;
-declare let Accessory: HAPNodeJS.Accessory;
-declare let Service: HAPNodeJS.Service;
-declare let Characteristic: HAPNodeJS.Characteristic;
-declare let UUIDGen: HAPNodeJS.uuid;
-*/
 
 export class AccessoryTools {
   private static platformAccessory: any;
