@@ -33,7 +33,7 @@ export class Pulse extends P {
   }
 }
 
-export class Frame extends F {
+export class Frame extends F<Pulse> {
   public constructor(buffer: Buffer, gap = 239) {
     const leader = Pulse.fromWidth(8, 4);
 

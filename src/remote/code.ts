@@ -23,10 +23,10 @@ export class Pulse extends Array<number> {
   }
 }
 
-export class Frame extends Array<Pulse> {
+export class Frame<T extends Pulse> extends Array<T> {
   public buffer: Buffer;
 
-  public constructor(pulse: Pulse[]) {
+  public constructor(pulse: T[]) {
     super(...pulse);
     this.buffer = this.flatBuffer;
   }
@@ -55,25 +55,27 @@ export class Frame extends Array<Pulse> {
 }
 
 export class BroadlinkData {
-  private data: ArrayBuffer;
+  private data: ArrayBuffer | SharedArrayBuffer;
 
-  public constructor(data: string | Uint8Array | Buffer | Frame) {
+  public constructor(data: string | Uint8Array | Buffer | Frame<Pulse>) {
+    let buf: Buffer | null = null;
     switch (data.constructor.name) {
       case "String":
-        this.data = Buffer.from(data as string, "hex");
+        buf = Buffer.from(data as string, "hex");
         break;
       case "Uint8Array":
         this.data = (data as Uint8Array).buffer;
-        break;
+        return;
       case "Buffer":
-        this.data = data as Buffer;
+        buf = data as Buffer;
         break;
       case "Frame":
-        this.data = (data as Frame).buffer;
+        buf = (data as Frame<Pulse>).buffer;
         break;
       default:
         throw new RangeError("Unknown type");
     }
+    this.data = new Uint8Array(buf).buffer;
   }
 
   public get code(): number[] {
