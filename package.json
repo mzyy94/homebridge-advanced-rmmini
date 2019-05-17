@@ -7,7 +7,7 @@
     "prepare": "tsc",
     "format": "prettier --write 'src/**/*'",
     "lint": "eslint --fix 'src/**/*'",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tsc --build tsconfig.test.json && ava 'test/**/__tests__/*'"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,7 @@
   "devDependencies": {
     "@types/node": "^12.0.0",
     "@typescript-eslint/eslint-plugin": "^1.7.0",
+    "ava": "^1.4.1",
     "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-prettier": "^4.2.0",
