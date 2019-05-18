@@ -1,6 +1,6 @@
-import { AccessoryTools, createAccessory } from "./accessories";
+import { Tools, createAccessory } from "./accessories";
 import { AccessoryConfig } from "./config";
-import BaseAccessory from "./accessories/base";
+import Base from "./accessories/base";
 
 const PLUGIN_NAME = "eremote-hub";
 const PLATFORM_NAME = "eRemote";
@@ -9,7 +9,7 @@ export const setHomebridgeProperties = ({
   hap,
   platformAccessory
 }: Homebridge.Homebridge): void => {
-  AccessoryTools.initialize(
+  Tools.initialize(
     platformAccessory,
     hap.Accessory,
     hap.Service,
@@ -21,7 +21,7 @@ export const setHomebridgeProperties = ({
 export class ERemotePlatform {
   private log: any;
 
-  private accessories: Map<string, BaseAccessory<AccessoryConfig>>;
+  private accessories: Map<string, Base<AccessoryConfig>>;
 
   private api: any;
 
@@ -59,7 +59,7 @@ export class ERemotePlatform {
     }
   }
 
-  private removeAccessory(accessory: BaseAccessory<AccessoryConfig>): void {
+  private removeAccessory(accessory: Base<AccessoryConfig>): void {
     this.log(
       `Removing accessory ${accessory.currentAccessory.context.name}...`
     );

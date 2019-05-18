@@ -1,13 +1,12 @@
-import { AccessoryTools } from ".";
+import { Tools } from ".";
 import { SwitchConfig } from "../config";
-import BaseAccessory from "./base";
+import Base, { Callback } from "./base";
 
 interface Context {
   currentState: boolean;
 }
 
-export default class Switch extends BaseAccessory<SwitchConfig>
-  implements Context {
+export default class Switch extends Base<SwitchConfig> implements Context {
   private context: Context;
 
   public get currentState(): boolean {
@@ -22,8 +21,8 @@ export default class Switch extends BaseAccessory<SwitchConfig>
     super(
       config,
       log,
-      AccessoryTools.Accessory.Categories.SWITCH,
-      AccessoryTools.Service.Switch,
+      Tools.Accessory.Categories.SWITCH,
+      Tools.Service.Switch,
       accessory
     );
     this.context = this.accessory.context;
@@ -37,20 +36,20 @@ export default class Switch extends BaseAccessory<SwitchConfig>
 
   private setService(): void {
     this.accessory
-      .getService(AccessoryTools.Service.Switch)
-      .getCharacteristic(AccessoryTools.Characteristic.On)
+      .getService(Tools.Service.Switch)
+      .getCharacteristic(Tools.Characteristic.On)
       .on("get", this.onGetState.bind(this))
       .on("set", this.onSetState.bind(this));
 
     this.accessory.on("identify", this.onIdentify.bind(this));
   }
 
-  private onGetState(callback): void {
+  private onGetState(callback: Callback<boolean>): void {
     this.log(`${this.name} get state: ${this.currentState}`);
     callback(null, this.currentState);
   }
 
-  private onSetState(state, callback): void {
+  private onSetState(state: boolean, callback: Callback<boolean>): void {
     this.log(`${this.name} set state: ${this.currentState} => ${state}`);
     if (state === true) {
       this.sendData("on");
@@ -62,7 +61,7 @@ export default class Switch extends BaseAccessory<SwitchConfig>
     callback(null, this.currentState);
   }
 
-  private onIdentify(paired, callback): void {
+  private onIdentify(paired: boolean, callback: () => void): void {
     this.log(`${this.name} identify requested: ${paired}`);
     callback();
   }

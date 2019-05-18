@@ -1,4 +1,4 @@
-import BaseAccessory from "./base";
+import Base from "./base";
 import { AccessoryConfig, SwitchConfig } from "../config";
 import Switch from "./switch";
 
@@ -6,7 +6,7 @@ export const createAccessory = (
   config: AccessoryConfig,
   log: Function,
   accessory?: Homebridge.PlatformAccessory
-): BaseAccessory<AccessoryConfig> => {
+): Base<AccessoryConfig> => {
   switch (config.type) {
     case "switch":
       return new Switch(config as SwitchConfig, log, accessory);
@@ -15,7 +15,7 @@ export const createAccessory = (
   }
 };
 
-export class AccessoryTools {
+export class Tools {
   private static platformAccessory: any;
 
   private static accessory: HAPNodeJS.Accessory;
@@ -27,23 +27,23 @@ export class AccessoryTools {
   private static uuid: HAPNodeJS.uuid;
 
   public static get PlatformAccessory(): any {
-    return AccessoryTools.platformAccessory;
+    return Tools.platformAccessory;
   }
 
   public static get Accessory(): HAPNodeJS.Accessory {
-    return AccessoryTools.accessory;
+    return Tools.accessory;
   }
 
   public static get Service(): HAPNodeJS.Service {
-    return AccessoryTools.service;
+    return Tools.service;
   }
 
   public static get Characteristic(): HAPNodeJS.Characteristic {
-    return AccessoryTools.characteristic;
+    return Tools.characteristic;
   }
 
   public static get UUIDGen(): HAPNodeJS.uuid {
-    return AccessoryTools.uuid;
+    return Tools.uuid;
   }
 
   public static initialize = (
@@ -53,10 +53,10 @@ export class AccessoryTools {
     characteristic: HAPNodeJS.Characteristic,
     uuid: HAPNodeJS.uuid
   ): void => {
-    AccessoryTools.platformAccessory = platformAccessory;
-    AccessoryTools.accessory = accessory;
-    AccessoryTools.service = service;
-    AccessoryTools.characteristic = characteristic;
-    AccessoryTools.uuid = uuid;
+    Tools.platformAccessory = platformAccessory;
+    Tools.accessory = accessory;
+    Tools.service = service;
+    Tools.characteristic = characteristic;
+    Tools.uuid = uuid;
   };
 }

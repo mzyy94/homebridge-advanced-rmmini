@@ -1,8 +1,8 @@
-import { AccessoryTools } from ".";
+import { Tools } from ".";
 import { AccessoryConfig, FrameData } from "../config";
 import sendData from "../remote";
 
-export default class BaseAccessory<T extends AccessoryConfig> {
+export default class Base<T extends AccessoryConfig> {
   protected log: Function;
 
   protected sendData: Function;
@@ -29,12 +29,8 @@ export default class BaseAccessory<T extends AccessoryConfig> {
     if (accessory) {
       this.accessory = accessory;
     } else if (!!typeCode && !!service) {
-      const uuid = AccessoryTools.UUIDGen.generate(config.name);
-      this.accessory = new AccessoryTools.PlatformAccessory(
-        config.name,
-        uuid,
-        typeCode
-      );
+      const uuid = Tools.UUIDGen.generate(config.name);
+      this.accessory = new Tools.PlatformAccessory(config.name, uuid, typeCode);
       this.accessory.addService(service);
       this.accessory.reachable = true;
       this.accessory.context.name = config.name;
@@ -46,3 +42,5 @@ export default class BaseAccessory<T extends AccessoryConfig> {
     return this.accessory;
   }
 }
+
+export type Callback<T> = (error: Error | null | undefined, value: T) => void;
