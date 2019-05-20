@@ -2,7 +2,9 @@ import { Tools } from ".";
 import { AccessoryConfig, FrameData } from "../config";
 import sendData from "../remote";
 
-export default class Base<T extends AccessoryConfig> {
+export default class Base<T extends AccessoryConfig, C> {
+  protected context: C;
+
   protected log: Function;
 
   protected sendData: Function;
@@ -36,6 +38,28 @@ export default class Base<T extends AccessoryConfig> {
       this.accessory.context.name = config.name;
       this.accessory.context.config = config;
     }
+
+    this.context = new Proxy(this.accessory.context, {
+      set: (target, prop, value): boolean => {
+        this.log(
+          `${this.name} set value of ${String(prop)}: ${
+            target[prop]
+          } => ${value}`
+        );
+        return Reflect.set(target, prop, value);
+      },
+      get: (target, prop): any => {
+        this.log(`${this.name} get value of ${String(prop)}: ${target[prop]}`);
+        return Reflect.get(target, prop);
+      }
+    });
+  }
+
+  protected getValueWithCallback(
+    fieldName: keyof C,
+    callback: Callback<C[keyof C]>
+  ): void {
+    callback(null, this.context[fieldName]);
   }
 
   public get currentAccessory(): any {
@@ -43,4 +67,4 @@ export default class Base<T extends AccessoryConfig> {
   }
 }
 
-export type Callback<T> = (error: Error | null | undefined, value: T) => void;
+export type Callback<T> = (error?: Error | null | undefined, value?: T) => void;

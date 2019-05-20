@@ -21,7 +21,7 @@ export const setHomebridgeProperties = ({
 export class ERemotePlatform {
   private log: any;
 
-  private accessories: Map<string, Base<AccessoryConfig>>;
+  private accessories: Map<string, Base<AccessoryConfig, any>>;
 
   private api: any;
 
@@ -59,7 +59,7 @@ export class ERemotePlatform {
     }
   }
 
-  private removeAccessory(accessory: Base<AccessoryConfig>): void {
+  private removeAccessory(accessory: Base<AccessoryConfig, any>): void {
     this.log(
       `Removing accessory ${accessory.currentAccessory.context.name}...`
     );

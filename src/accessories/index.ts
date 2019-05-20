@@ -6,7 +6,7 @@ export const createAccessory = (
   config: AccessoryConfig,
   log: Function,
   accessory?: Homebridge.PlatformAccessory
-): Base<AccessoryConfig> => {
+): Base<AccessoryConfig, any> => {
   switch (config.type) {
     case "switch":
       return new Switch(config as SwitchConfig, log, accessory);
