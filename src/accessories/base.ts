@@ -15,6 +15,10 @@ export default class Base<T extends AccessoryConfig, C> {
     return this.accessory.context.name;
   }
 
+  protected get config(): T {
+    return this.accessory.context.config;
+  }
+
   public constructor(
     config: T,
     log: Function,
@@ -60,4 +64,7 @@ export default class Base<T extends AccessoryConfig, C> {
   }
 }
 
-export type Callback<T> = (error?: Error | null | undefined, value?: T) => void;
+export type Callback<T = number | string | boolean> = (
+  error?: Error | null | undefined,
+  value?: T
+) => void;
