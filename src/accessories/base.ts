@@ -55,13 +55,6 @@ export default class Base<T extends AccessoryConfig, C> {
     });
   }
 
-  protected getValueWithCallback(
-    fieldName: keyof C,
-    callback: Callback<C[keyof C]>
-  ): void {
-    callback(null, this.context[fieldName]);
-  }
-
   public get currentAccessory(): any {
     return this.accessory;
   }

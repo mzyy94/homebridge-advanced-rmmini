@@ -32,11 +32,7 @@ export default class Switch extends Base<SwitchConfig, Context>
     this.accessory
       .getService(Tools.Service.Switch)
       .getCharacteristic(Tools.Characteristic.On)
-      .on(
-        "get",
-        (callback: Callback<boolean>): void =>
-          this.getValueWithCallback("currentState", callback)
-      )
+      .on("get", (cb: Callback<boolean>): void => cb(null, this.currentState))
       .on("set", this.onSetState.bind(this));
 
     this.accessory.on("identify", this.onIdentify.bind(this));
