@@ -107,7 +107,7 @@ export class Frame extends F<Pulse> {
     return this.data.slice(2);
   }
 
-  public toFrameData(): object {
+  public toFrameData(): FrameData {
     return {
       data: this.data.toString("hex"),
       gap: this.gap
@@ -137,8 +137,14 @@ export class AEHA {
     return buffer;
   }
 
-  public toFrameData(): object[] {
-    return this.frames.map((frame): object => frame.toFrameData());
+  public toFrameConfig(): FrameConfig {
+    const config: FrameConfig = {
+      frames: this.frames.map((frame): FrameData => frame.toFrameData())
+    };
+    if (this.repeat > 1) {
+      config.repeat = 1;
+    }
+    return config;
   }
 
   public static fromSendData(data: string): AEHA {
