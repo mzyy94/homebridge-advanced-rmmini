@@ -1,5 +1,5 @@
 import { Tools } from ".";
-import { AccessoryConfig, FrameData } from "../config";
+import { AccessoryConfig, FrameConfig } from "../config";
 import sendData from "../remote";
 
 export default class Base<T extends AccessoryConfig, C> {
@@ -28,7 +28,7 @@ export default class Base<T extends AccessoryConfig, C> {
   ) {
     this.log = log;
     this.sendData = (param: string): void => {
-      const code: string | FrameData[] = config.code[param];
+      const code: FrameConfig = config.code[param];
       sendData(code);
     };
 

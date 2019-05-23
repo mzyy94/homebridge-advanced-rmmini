@@ -1,23 +1,25 @@
 import test, { ExecutionContext } from "ava";
-import { FrameData } from "../../config";
+import { FrameConfig, FrameData } from "../../config";
 import { AEHA } from "../aeha";
 
 test(
   "Convert to send data from AEHA frame data",
-  (t: ExecutionContext, input: FrameData[], expected: string): void => {
+  (t: ExecutionContext, input: FrameConfig, expected: string): void => {
     const aeha = new AEHA(input);
     t.is(aeha.toSendData().toString("hex"), expected);
   },
-  [
-    {
-      data: "2c52092f26",
-      gap: 177
-    },
-    {
-      data: "2c52092f26",
-      gap: 239
-    }
-  ],
+  {
+    frames: [
+      {
+        data: "2c52092f26",
+        gap: 177
+      },
+      {
+        data: "2c52092f26",
+        gap: 239
+      }
+    ]
+  },
   "2600ac006f370d0d0d0d0d290d290d0d0d290d0d0d0d0d0d0d290d0d0d0d0d290d0d0d290d0d0d290d0d0d0d0d290d0d0d0d0d0d0d0d0d290d290d290d290d0d0d290d0d0d0d0d0d0d290d290d0d0d0d0d290d0d0d0d0d0009a46f370d0d0d0d0d290d290d0d0d290d0d0d0d0d0d0d290d0d0d0d0d290d0d0d290d0d0d290d0d0d0d0d290d0d0d0d0d0d0d0d0d290d290d290d290d0d0d290d0d0d0d0d0d0d290d290d0d0d0d0d290d0d0d0d0d000d0500000000000000000000000000000000"
 );
 
@@ -42,27 +44,30 @@ test(
 
 test(
   "Convert to send data from AEHA frame data with replacer",
-  (t: ExecutionContext, input: FrameData[], expected: string): void => {
-    const edited = AEHA.prepareFrameData(input, { value: 100 });
-    const aeha = new AEHA(edited);
+  (t: ExecutionContext, input: FrameConfig, expected: string): void => {
+    const data = input;
+    data.frames = AEHA.prepareFrameData(input.frames, { value: 100 });
+    const aeha = new AEHA(data);
     t.is(aeha.toSendData().toString("hex"), expected);
   },
-  [
-    {
-      data: "2c5209VV26",
-      gap: 177,
-      replacer: [
-        {
-          name: "value",
-          target: "VV",
-          preprocessor: "value * 2"
-        }
-      ]
-    },
-    {
-      data: "2c52092f26",
-      gap: 239
-    }
-  ],
+  {
+    frames: [
+      {
+        data: "2c5209VV26",
+        gap: 177,
+        replacer: [
+          {
+            name: "value",
+            target: "VV",
+            preprocessor: "value * 2"
+          }
+        ]
+      },
+      {
+        data: "2c52092f26",
+        gap: 239
+      }
+    ]
+  },
   "2600ac006f370d0d0d0d0d290d290d0d0d290d0d0d0d0d0d0d290d0d0d0d0d290d0d0d290d0d0d290d0d0d0d0d290d0d0d0d0d0d0d0d0d0d0d0d0d0d0d290d0d0d0d0d290d290d0d0d290d290d0d0d0d0d290d0d0d0d0d0009a46f370d0d0d0d0d290d290d0d0d290d0d0d0d0d0d0d290d0d0d0d0d290d0d0d290d0d0d290d0d0d0d0d290d0d0d0d0d0d0d0d0d290d290d290d290d0d0d290d0d0d0d0d0d0d290d290d0d0d0d0d290d0d0d0d0d000d0500000000000000000000000000000000"
 );

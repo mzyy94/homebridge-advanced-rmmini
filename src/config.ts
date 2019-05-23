@@ -4,6 +4,11 @@ export interface Replacer {
   preprocessor?: string;
 }
 
+export interface FrameConfig {
+  repeat?: number;
+  frames: FrameData[];
+}
+
 export interface FrameData {
   data: string;
   gap?: number;
