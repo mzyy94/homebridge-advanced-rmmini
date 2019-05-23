@@ -57,7 +57,12 @@ export class Frame<T extends Pulse> extends Array<T> {
 export class BroadlinkData {
   private data: ArrayBuffer | SharedArrayBuffer;
 
-  public constructor(data: string | Uint8Array | Buffer | Frame<Pulse>) {
+  private repeat: number;
+
+  public constructor(
+    data: string | Uint8Array | Buffer | Frame<Pulse>,
+    repeat?: number
+  ) {
     let buf: Buffer | null = null;
     switch (data.constructor.name) {
       case "String":
@@ -76,6 +81,7 @@ export class BroadlinkData {
         throw new RangeError("Unknown type");
     }
     this.data = new Uint8Array(buf).buffer;
+    this.repeat = repeat && repeat > 1 ? Math.floor(repeat) : 1;
   }
 
   public get code(): number[] {
@@ -86,7 +92,14 @@ export class BroadlinkData {
         current === 0 && index + 1 === result ? result - 1 : result,
       buffer.byteLength
     );
-    return [0x26, 0, trimmedLength, 0, ...buffer.values(), ...Buffer.alloc(16)];
+    return [
+      0x26,
+      this.repeat - 1,
+      trimmedLength,
+      0,
+      ...buffer.values(),
+      ...Buffer.alloc(16)
+    ];
   }
 
   public get buffer(): Buffer {
