@@ -39,3 +39,30 @@ test(
     }
   ]
 );
+
+test(
+  "Convert to send data from AEHA frame data with replacer",
+  (t: ExecutionContext, input: FrameData[], expected: string): void => {
+    const edited = AEHA.prepareFrameData(input, { value: 100 });
+    const aeha = new AEHA(edited);
+    t.is(aeha.toSendData().toString("hex"), expected);
+  },
+  [
+    {
+      data: "2c5209VV26",
+      gap: 177,
+      replacer: [
+        {
+          name: "value",
+          target: "VV",
+          preprocessor: "value * 2"
+        }
+      ]
+    },
+    {
+      data: "2c52092f26",
+      gap: 239
+    }
+  ],
+  "2600ac006f370d0d0d0d0d290d290d0d0d290d0d0d0d0d0d0d290d0d0d0d0d290d0d0d290d0d0d290d0d0d0d0d290d0d0d0d0d0d0d0d0d0d0d0d0d0d0d290d0d0d0d0d290d290d0d0d290d290d0d0d0d0d290d0d0d0d0d0009a46f370d0d0d0d0d290d290d0d0d290d0d0d0d0d0d0d290d0d0d0d0d290d0d0d290d0d0d290d0d0d0d0d290d0d0d0d0d0d0d0d0d290d290d290d290d0d0d290d0d0d0d0d0d0d290d290d0d0d0d0d290d0d0d0d0d000d0500000000000000000000000000000000"
+);

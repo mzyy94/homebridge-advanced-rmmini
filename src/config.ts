@@ -1,9 +1,16 @@
+export interface Replacer {
+  name: string;
+  target: string;
+  preprocessor?: string;
+}
+
 export interface FrameData {
   data: string;
   gap?: number;
+  replacer?: Replacer[];
 }
 
-export type Code = string | FrameData;
+export type Code = string | FrameData[];
 
 export interface CommonConfig {
   name: string;

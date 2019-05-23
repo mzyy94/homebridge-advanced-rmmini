@@ -1,5 +1,5 @@
 import { Frame as F, Pulse as P, BroadlinkData } from "./code";
-import { FrameData } from "../config";
+import { FrameData, Replacer } from "../config";
 
 // https://github.com/mjg59/python-broadlink/blob/master/protocol.md#sending-data
 const FREQUENCY = 268.85 / 8192; // GHz
@@ -169,5 +169,34 @@ export class AEHA {
     }
 
     return new AEHA([], frames);
+  }
+
+  public static prepareFrameData(data: FrameData[], value: {}): FrameData[] {
+    return data.map(
+      (f: FrameData): FrameData => {
+        const frame = f;
+        if (frame.replacer) {
+          frame.replacer.forEach(
+            (r: Replacer): void => {
+              let v = value[r.name];
+              if (!v) return;
+              if (r.preprocessor) {
+                // eslint-disable-next-line no-new-func
+                const processor = new Function(
+                  r.name,
+                  `return ${r.preprocessor}`
+                );
+                v = processor(v);
+              }
+              frame.data = frame.data.replace(
+                r.target,
+                Buffer.from([v]).toString("hex")
+              );
+            }
+          );
+        }
+        return frame;
+      }
+    );
   }
 }
