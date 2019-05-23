@@ -34,8 +34,6 @@ export default class Switch extends Base<SwitchConfig, Context>
       .getCharacteristic(Tools.Characteristic.On)
       .on("get", (cb: Callback<boolean>): void => cb(null, this.currentState))
       .on("set", this.onSetState.bind(this));
-
-    this.accessory.on("identify", this.onIdentify.bind(this));
   }
 
   private onSetState(state: boolean, callback: Callback<boolean>): void {
@@ -47,10 +45,5 @@ export default class Switch extends Base<SwitchConfig, Context>
 
     this.currentState = state;
     callback(null, this.currentState);
-  }
-
-  private onIdentify(paired: boolean, callback: () => void): void {
-    this.log(`${this.name} identify requested: ${paired}`);
-    callback();
   }
 }

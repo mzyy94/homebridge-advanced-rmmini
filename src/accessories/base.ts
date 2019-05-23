@@ -43,6 +43,8 @@ export default class Base<T extends AccessoryConfig, C> {
       this.accessory.context.config = config;
     }
 
+    this.accessory.on("identify", this.onIdentify.bind(this));
+
     this.context = new Proxy(this.accessory.context, {
       set: (target, prop, value): boolean => {
         this.log(
@@ -57,6 +59,11 @@ export default class Base<T extends AccessoryConfig, C> {
         return Reflect.get(target, prop);
       }
     });
+  }
+
+  private onIdentify(paired: number, callback: () => void): void {
+    this.log(`${this.name} identify requested: ${paired}`);
+    callback();
   }
 
   public get currentAccessory(): any {
