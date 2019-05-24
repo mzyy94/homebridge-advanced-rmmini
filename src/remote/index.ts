@@ -10,6 +10,9 @@ const PING_INTERVAL = 5000;
 
 const initialize = (): void => {
   broadlink.discover();
+  // discover every 10 seconds
+  setInterval(broadlink.discover.bind(broadlink), 10 * 1000);
+
   broadlink.on(
     "deviceReady",
     (device): void => {
