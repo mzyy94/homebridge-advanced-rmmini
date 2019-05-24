@@ -7,8 +7,6 @@ export default class Base<T extends AccessoryConfig, C> {
 
   protected log: Function;
 
-  protected sendData: Function;
-
   protected accessory: Homebridge.PlatformAccessory;
 
   protected get name(): string {
@@ -19,6 +17,16 @@ export default class Base<T extends AccessoryConfig, C> {
     return this.accessory.context.config;
   }
 
+  protected async sendData(param: string, repeat: number = 1): Promise<void> {
+    const code: FrameConfig = this.config.code[param];
+    sendData(code);
+    for (let i = 1; i < repeat; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await new Promise((resolve): NodeJS.Timeout => setTimeout(resolve, 500));
+      sendData(code);
+    }
+  }
+
   public constructor(
     config: T,
     log: Function,
@@ -27,10 +35,6 @@ export default class Base<T extends AccessoryConfig, C> {
     accessory?: Homebridge.PlatformAccessory
   ) {
     this.log = log;
-    this.sendData = (param: string, repeat?: number): void => {
-      const code: FrameConfig = config.code[param];
-      sendData(code, repeat);
-    };
 
     if (accessory) {
       this.accessory = accessory;
