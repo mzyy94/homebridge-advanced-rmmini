@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { Tools } from ".";
 import { LightConfig } from "../config";
 import Base, { Callback } from "./base";
