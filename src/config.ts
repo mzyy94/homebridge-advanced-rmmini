@@ -32,6 +32,31 @@ export interface Switch {
 
 export type SwitchConfig = CommonConfig & Switch;
 
-export type Accessories = Switch;
+interface SteppingLight {
+  step: number;
+  code: {
+    warmer?: Code;
+    cooler?: Code;
+    brighter?: Code;
+    dimmer?: Code;
+    cool?: Code;
+    warm?: Code;
+  };
+}
+
+export type Light = SteppingLight & {
+  type: "light";
+  color?: "white" | "all" | "none";
+  mode?: "value" | "step";
+  step?: number;
+  code: {
+    on: Code;
+    off: Code;
+  };
+};
+
+export type LightConfig = CommonConfig & Light;
+
+export type Accessories = Switch | Light;
 
 export type AccessoryConfig = CommonConfig & Accessories;
