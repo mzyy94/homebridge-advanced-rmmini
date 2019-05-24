@@ -6,12 +6,7 @@ interface Context {
   currentState: boolean;
 }
 
-export default class Switch extends Base<SwitchConfig, Context>
-  implements Context {
-  public set currentState(state) {
-    this.context.currentState = state;
-  }
-
+export default class Switch extends Base<SwitchConfig, Context> {
   public constructor(config: SwitchConfig, log: Function, accessory?: any) {
     super(
       config,
@@ -22,7 +17,7 @@ export default class Switch extends Base<SwitchConfig, Context>
     );
 
     if (!accessory) {
-      this.currentState = false;
+      this.context.currentState = false;
     }
 
     this.setService();
@@ -32,7 +27,10 @@ export default class Switch extends Base<SwitchConfig, Context>
     this.accessory
       .getService(Tools.Service.Switch)
       .getCharacteristic(Tools.Characteristic.On)
-      .on("get", (cb: Callback<boolean>): void => cb(null, this.currentState))
+      .on(
+        "get",
+        (cb: Callback<boolean>): void => cb(null, this.context.currentState)
+      )
       .on("set", this.onSetState.bind(this));
   }
 
@@ -43,7 +41,7 @@ export default class Switch extends Base<SwitchConfig, Context>
       this.sendData("off");
     }
 
-    this.currentState = state;
-    callback(null, this.currentState);
+    this.context.currentState = state;
+    callback();
   }
 }

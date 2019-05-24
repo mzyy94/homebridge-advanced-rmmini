@@ -9,24 +9,7 @@ interface Context {
   brightness: number;
 }
 
-export default class Light extends Base<LightConfig, Context>
-  implements Context {
-  public set state(state) {
-    this.context.state = state;
-  }
-
-  public get state(): boolean {
-    return this.context.state;
-  }
-
-  public set brightness(state) {
-    this.context.brightness = state;
-  }
-
-  public get brightness(): number {
-    return this.context.brightness;
-  }
-
+export default class Light extends Base<LightConfig, Context> {
   private get stepping(): number {
     return 100 / (this.config.step || 10);
   }
@@ -43,11 +26,11 @@ export default class Light extends Base<LightConfig, Context>
     );
 
     if (!accessory) {
-      this.state = false;
-      this.brightness = 0;
+      this.context.state = false;
+      this.context.brightness = 0;
     }
 
-    this.controlledBrightness = this.brightness / this.stepping;
+    this.controlledBrightness = this.context.brightness / this.stepping;
 
     this.setService();
   }
@@ -57,23 +40,26 @@ export default class Light extends Base<LightConfig, Context>
 
     service
       .getCharacteristic(Tools.Characteristic.On)
-      .on("get", (cb: Callback<boolean>): void => cb(null, this.state))
+      .on("get", (cb: Callback<boolean>): void => cb(null, this.context.state))
       .on("set", this.onSetPowerState.bind(this));
 
     if (this.config.code.dimmer && this.config.code.brighter) {
       service
         .getCharacteristic(Tools.Characteristic.Brightness)
-        .on("get", (cb: Callback<number>): void => cb(null, this.brightness))
+        .on(
+          "get",
+          (cb: Callback<number>): void => cb(null, this.context.brightness)
+        )
         .on("set", this.onSetBrightness.bind(this));
     }
   }
 
   private onSetPowerState(state: boolean, callback: Callback<boolean>): void {
-    if (state === this.state) {
+    if (state === this.context.state) {
       callback();
       return;
     }
-    this.log(`${this.name} set state: ${this.state} => ${state}`);
+    this.log(`${this.name} set state: ${this.context.state} => ${state}`);
 
     if (state === true) {
       this.sendData("on");
@@ -81,19 +67,19 @@ export default class Light extends Base<LightConfig, Context>
       // TODO: Set this part as configurable
       const service = this.accessory.getService(Tools.Service.Lightbulb);
 
-      this.brightness = 100;
-      this.controlledBrightness = this.brightness / this.stepping;
+      this.context.brightness = 100;
+      this.controlledBrightness = this.context.brightness / this.stepping;
 
       service.updateCharacteristic(
         // @ts-ignore
         Tools.Characteristic.Brightness,
-        this.brightness
+        this.context.brightness
       );
     } else {
       this.sendData("off");
     }
 
-    this.state = state;
+    this.context.state = state;
 
     callback();
   }
@@ -102,19 +88,21 @@ export default class Light extends Base<LightConfig, Context>
     value: number,
     callback: Callback<number>
   ): Promise<void> {
-    if (this.state === false) {
-      this.brightness = 0;
+    if (this.context.state === false) {
+      this.context.brightness = 0;
       callback();
       return;
     }
 
-    if (this.brightness === value) {
+    if (this.context.brightness === value) {
       callback();
       return;
     }
 
-    this.log(`${this.name} set brightness: ${this.brightness} => ${value}`);
-    this.brightness = value;
+    this.log(
+      `${this.name} set brightness: ${this.context.brightness} => ${value}`
+    );
+    this.context.brightness = value;
 
     const step = this.stepping;
     const targetControlled = Math.ceil(value / step);
