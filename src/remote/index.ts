@@ -28,12 +28,17 @@ const initialize = (): void => {
 
 initialize();
 
-export default (code: string | FrameConfig): void => {
+export default (code: string | FrameConfig, repeat: number = 1): void => {
   let data: Buffer;
   if (typeof code === "string") {
     data = Buffer.from(code, "hex");
+    data.writeUInt8(repeat - 1, 1);
   } else {
-    const aeha = new AEHA(code);
+    const modified = code;
+    modified.repeat = modified.repeat || 1;
+    modified.repeat *= repeat;
+    // TODO: prepareFrameData
+    const aeha = new AEHA(modified);
     data = aeha.toSendData();
   }
   const device = Object.values<any>(broadlink.devices)[0];

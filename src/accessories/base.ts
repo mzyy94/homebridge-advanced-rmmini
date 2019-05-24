@@ -27,9 +27,9 @@ export default class Base<T extends AccessoryConfig, C> {
     accessory?: Homebridge.PlatformAccessory
   ) {
     this.log = log;
-    this.sendData = (param: string): void => {
+    this.sendData = (param: string, repeat?: number): void => {
       const code: FrameConfig = config.code[param];
-      sendData(code);
+      sendData(code, repeat);
     };
 
     if (accessory) {
