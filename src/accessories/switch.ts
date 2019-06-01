@@ -1,6 +1,6 @@
 import { Tools } from ".";
 import { SwitchConfig } from "../config";
-import Base, { Callback } from "./base";
+import Base from "./base";
 
 interface Context {
   currentState: boolean;
@@ -29,12 +29,16 @@ export default class Switch extends Base<SwitchConfig, Context> {
       .getCharacteristic(Tools.Characteristic.On)
       .on(
         "get",
-        (cb: Callback<boolean>): void => cb(null, this.context.currentState)
+        (cb: HAPNodeJS.CharacteristicGetCallback<boolean>): void =>
+          cb(null, this.context.currentState)
       )
       .on("set", this.onSetState.bind(this));
   }
 
-  private onSetState(state: boolean, callback: Callback<boolean>): void {
+  private onSetState(
+    state: boolean,
+    callback: HAPNodeJS.CharacteristicSetCallback
+  ): void {
     if (state === true) {
       this.sendData("on");
     } else {

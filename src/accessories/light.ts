@@ -1,6 +1,6 @@
 import { Tools } from ".";
 import { LightConfig } from "../config";
-import Base, { Callback } from "./base";
+import Base from "./base";
 
 interface Context {
   state: boolean;
@@ -38,7 +38,11 @@ export default class Light extends Base<LightConfig, Context> {
 
     service
       .getCharacteristic(Tools.Characteristic.On)
-      .on("get", (cb: Callback<boolean>): void => cb(null, this.context.state))
+      .on(
+        "get",
+        (cb: HAPNodeJS.CharacteristicGetCallback): void =>
+          cb(null, this.context.state)
+      )
       .on("set", this.onSetPowerState.bind(this));
 
     if (this.config.code.dimmer && this.config.code.brighter) {
@@ -46,13 +50,17 @@ export default class Light extends Base<LightConfig, Context> {
         .getCharacteristic(Tools.Characteristic.Brightness)
         .on(
           "get",
-          (cb: Callback<number>): void => cb(null, this.context.brightness)
+          (cb: HAPNodeJS.CharacteristicGetCallback): void =>
+            cb(null, this.context.brightness)
         )
         .on("set", this.onSetBrightness.bind(this));
     }
   }
 
-  private onSetPowerState(state: boolean, callback: Callback<boolean>): void {
+  private onSetPowerState(
+    state: boolean,
+    callback: HAPNodeJS.CharacteristicSetCallback
+  ): void {
     if (state === this.context.state) {
       callback();
       return;
@@ -69,7 +77,6 @@ export default class Light extends Base<LightConfig, Context> {
       this.controlledBrightness = this.context.brightness / this.stepping;
 
       service.updateCharacteristic(
-        // @ts-ignore
         Tools.Characteristic.Brightness,
         this.context.brightness
       );
@@ -84,7 +91,7 @@ export default class Light extends Base<LightConfig, Context> {
 
   private async onSetBrightness(
     value: number,
-    callback: Callback<number>
+    callback: HAPNodeJS.CharacteristicSetCallback
   ): Promise<void> {
     if (this.context.state === false) {
       this.context.brightness = 0;

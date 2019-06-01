@@ -74,8 +74,3 @@ export default class Base<T extends AccessoryConfig, C> {
     return this.accessory;
   }
 }
-
-export type Callback<T = number | string | boolean> = (
-  error?: Error | null | undefined,
-  value?: T
-) => void;
