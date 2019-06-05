@@ -39,8 +39,9 @@ interface SteppingLight {
     cooler?: Code;
     brighter?: Code;
     dimmer?: Code;
-    cool?: Code;
-    warm?: Code;
+    temperature?: {
+      [value: string]: Code;
+    };
   };
 }
 
