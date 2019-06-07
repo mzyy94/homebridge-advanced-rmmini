@@ -1,7 +1,13 @@
 import Base from "./base";
-import { AccessoryConfig, SwitchConfig, LightConfig } from "../config";
+import {
+  AccessoryConfig,
+  SwitchConfig,
+  LightConfig,
+  TVConfig
+} from "../config";
 import Switch from "./switch";
 import Light from "./light";
+import TV from "./tv";
 
 export const createAccessory = (
   config: AccessoryConfig,
@@ -13,6 +19,8 @@ export const createAccessory = (
       return new Switch(config as SwitchConfig, log, accessory);
     case "light":
       return new Light(config as LightConfig, log, accessory);
+    case "tv":
+      return new TV(config as TVConfig, log, accessory);
     default:
       throw new TypeError("Invalid type of accessory");
   }
