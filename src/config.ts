@@ -58,6 +58,16 @@ export type Light = SteppingLight & {
 
 export type LightConfig = CommonConfig & Light;
 
-export type Accessories = Switch | Light;
+export interface Television {
+  type: "tv";
+  code: {
+    on: Code;
+    off: Code;
+  };
+}
+
+export type TVConfig = CommonConfig & Television;
+
+export type Accessories = Switch | Light | Television;
 
 export type AccessoryConfig = CommonConfig & Accessories;
