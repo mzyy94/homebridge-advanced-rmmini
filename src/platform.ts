@@ -78,5 +78,7 @@ export class ERemotePlatform {
           this.removeAccessory(accessory);
       }
     );
+
+    this.api.updatePlatformAccessories(this.accessories);
   }
 }
