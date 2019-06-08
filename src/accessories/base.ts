@@ -17,8 +17,14 @@ export default class Base<T extends AccessoryConfig, C> {
     return this.accessory.context.config;
   }
 
-  protected async sendData(param: string, repeat: number = 1): Promise<void> {
-    const code: Code = this.config.code[param];
+  protected async sendData(
+    param: string | string[],
+    repeat: number = 1
+  ): Promise<void> {
+    const code: Code =
+      typeof param === "string"
+        ? this.config.code[param]
+        : param.reduce((object, key): object => object[key], this.config.code);
     sendData(code);
     for (let i = 1; i < repeat; i += 1) {
       // eslint-disable-next-line no-await-in-loop
