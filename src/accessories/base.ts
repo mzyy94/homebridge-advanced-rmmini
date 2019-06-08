@@ -1,5 +1,5 @@
 import { Tools } from ".";
-import { AccessoryConfig, FrameConfig } from "../config";
+import { AccessoryConfig, Code } from "../config";
 import sendData from "../remote";
 
 export default class Base<T extends AccessoryConfig, C> {
@@ -18,7 +18,7 @@ export default class Base<T extends AccessoryConfig, C> {
   }
 
   protected async sendData(param: string, repeat: number = 1): Promise<void> {
-    const code: FrameConfig = this.config.code[param];
+    const code: Code = this.config.code[param];
     sendData(code);
     for (let i = 1; i < repeat; i += 1) {
       // eslint-disable-next-line no-await-in-loop

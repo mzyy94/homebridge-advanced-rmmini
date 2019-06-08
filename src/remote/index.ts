@@ -1,5 +1,5 @@
 import * as Broadlink from "broadlinkjs-rm";
-import { FrameConfig } from "../config";
+import { Code } from "../config";
 import { AEHA } from "./aeha";
 
 const broadlink: any = new Broadlink();
@@ -31,7 +31,7 @@ const initialize = (): void => {
 
 initialize();
 
-export default (code: string | FrameConfig): void => {
+export default (code: Code): void => {
   let data: Buffer;
   if (typeof code === "string") {
     data = Buffer.from(code, "hex");

@@ -15,7 +15,7 @@ export interface FrameData {
   replacer?: Replacer[];
 }
 
-export type Code = string | FrameData[];
+export type Code = string | FrameConfig;
 
 export interface CommonConfig {
   name: string;
