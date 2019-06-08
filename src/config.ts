@@ -63,6 +63,9 @@ export interface Television {
   code: {
     on: Code;
     off: Code;
+    channels?: {
+      [name: string]: Code;
+    };
   };
 }
 

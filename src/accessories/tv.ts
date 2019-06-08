@@ -7,6 +7,8 @@ interface Context {
 }
 
 export default class TV extends Base<TVConfig, Context> {
+  private channels: string[];
+
   public constructor(config: TVConfig, log: Function, accessory?: any) {
     const Television = new Tools.Service.Television(config.name, config.name);
 
@@ -22,6 +24,8 @@ export default class TV extends Base<TVConfig, Context> {
     if (!accessory) {
       this.context.state = 0;
     }
+
+    this.channels = [""];
 
     this.setService();
   }
@@ -66,5 +70,100 @@ export default class TV extends Base<TVConfig, Context> {
         callback();
       }
     );
+
+    if (this.config.code.channels) {
+      const { channels } = this.config.code;
+      const channelNames = Object.keys(channels)
+      const displayOrder = Buffer.alloc(channelNames.length * 6 + 2);
+      let id = 0;
+
+      channelNames.forEach((channelName): void => {
+        displayOrder.writeUInt8(0x01, id * 6);
+        displayOrder.writeUInt8(4, id * 6 + 1);
+        displayOrder.writeUInt32LE(id + 1, id * 6 + 2);
+        const input = this.setupChannelInput(channelName, id+=1);
+        // @ts-ignore
+        service.addLinkedService(input);
+        this.channels.push(channelName);
+      })
+
+      service
+        .getCharacteristic(Tools.Characteristic.DisplayOrder)
+        .updateValue(displayOrder.toString("base64"));
+
+      service
+        .setCharacteristic(Tools.Characteristic.ActiveIdentifier, 0)
+        .getCharacteristic(Tools.Characteristic.ActiveIdentifier)
+        // @ts-ignore
+        .on("set", (value, callback): void => {
+          this.sendData(["channels", this.channels[value]]);
+          service.updateCharacteristic(Tools.Characteristic.Active, 1);
+          callback();
+        });
+    }
+  }
+
+  private setupChannelInput(name, id): HAPNodeJS.Service {
+    return this.setupInput(
+      name,
+      id,
+      // @ts-ignore
+      Tools.Characteristic.InputDeviceType.TV,
+      // @ts-ignore
+      Tools.Characteristic.InputSourceType.TUNER
+    );
+  }
+
+  private setupInput(name, id, deviceType, sourceType): HAPNodeJS.Service {
+    let inputService = this.accessory.services.find(
+      (service): boolean => service.displayName === name
+    );
+
+    if (!inputService) {
+      inputService = new Tools.Service.InputSource(name, name);
+
+      inputService
+        .setCharacteristic(Tools.Characteristic.Name, name)
+        .setCharacteristic(Tools.Characteristic.Identifier, id)
+        .setCharacteristic(Tools.Characteristic.ConfiguredName, name)
+        .setCharacteristic(
+          Tools.Characteristic.IsConfigured,
+          // @ts-ignore
+          Tools.Characteristic.IsConfigured.CONFIGURED
+        )
+        .setCharacteristic(
+          Tools.Characteristic.CurrentVisibilityState,
+          // @ts-ignore
+          Tools.Characteristic.CurrentVisibilityState.SHOWN
+        )
+        .setCharacteristic(
+          Tools.Characteristic.TargetVisibilityState,
+          // @ts-ignore
+          Tools.Characteristic.TargetVisibilityState.SHOWN
+        )
+        .setCharacteristic(Tools.Characteristic.InputDeviceType, deviceType)
+        .setCharacteristic(Tools.Characteristic.InputSourceType, sourceType);
+
+      // @ts-ignore
+      this.accessory.addService(inputService, true);
+    }
+
+    inputService
+      .getCharacteristic(Tools.Characteristic.TargetVisibilityState)
+      // @ts-ignore
+      .on("set", (newValue, callback): void => {
+        // TODO: 
+        this.log(
+          `${this.name} set TargetVisibilityState of ${name}: => ${newValue}`
+        );
+        // @ts-ignore
+        inputService
+          .getCharacteristic(Tools.Characteristic.CurrentVisibilityState)
+          .updateValue(newValue);
+
+        callback();
+      });
+
+    return inputService;
   }
 }
