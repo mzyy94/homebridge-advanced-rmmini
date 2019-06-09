@@ -59,6 +59,8 @@ export default class Base<T extends AccessoryConfig, C> {
     }
     this.accessory.context.config = config;
 
+    this.setupMetadata(config);
+
     this.accessory.on("identify", this.onIdentify.bind(this));
 
     this.context = new Proxy(this.accessory.context, {
@@ -75,6 +77,38 @@ export default class Base<T extends AccessoryConfig, C> {
         return Reflect.get(target, prop);
       }
     });
+  }
+
+  private setupMetadata(config: AccessoryConfig): void {
+    const service = this.accessory.getService(
+      Tools.Service.AccessoryInformation
+    );
+    service.setCharacteristic(Tools.Characteristic.Name, config.name);
+
+    if (config.manufacturer) {
+      service.setCharacteristic(
+        Tools.Characteristic.Manufacturer,
+        config.manufacturer
+      );
+    }
+
+    if (config.model) {
+      service.setCharacteristic(Tools.Characteristic.Model, config.model);
+    }
+
+    if (config.serial_number) {
+      service.setCharacteristic(
+        Tools.Characteristic.SerialNumber,
+        config.serial_number
+      );
+    }
+
+    if (config.version) {
+      service.setCharacteristic(
+        Tools.Characteristic.FirmwareRevision,
+        config.version
+      );
+    }
   }
 
   private onIdentify(paired: number, callback: () => void): void {

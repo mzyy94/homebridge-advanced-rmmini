@@ -19,6 +19,11 @@ export type Code = string | FrameConfig;
 
 export interface CommonConfig {
   name: string;
+  serial_number?: string;
+  manufacturer?: string;
+  model?: string;
+  version?: string;
+
   mode: "raw" | "aeha";
 }
 
