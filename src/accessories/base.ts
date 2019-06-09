@@ -21,10 +21,16 @@ export default class Base<T extends AccessoryConfig, C> {
     param: string | string[],
     repeat: number = 1
   ): Promise<void> {
-    const code: Code =
+    const code: Code | undefined =
       typeof param === "string"
         ? this.config.code[param]
         : param.reduce((object, key): object => object[key], this.config.code);
+
+    if (!code) {
+      this.log(`${this.name}: Code ${param} not found.`)
+      return;
+    }
+
     sendData(code);
     for (let i = 1; i < repeat; i += 1) {
       // eslint-disable-next-line no-await-in-loop
