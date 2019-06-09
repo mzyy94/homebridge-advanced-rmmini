@@ -50,8 +50,7 @@ export default class TV extends Base<TVConfig, Context> {
       )
       .on(
         "set",
-        // @ts-ignore
-        (state, callback): void => {
+        (state: number, callback): void => {
           this.log(
             `${this.name} set Active: ${this.context.state} => ${state}`
           );
@@ -63,8 +62,7 @@ export default class TV extends Base<TVConfig, Context> {
 
     service.getCharacteristic(Tools.Characteristic.PowerModeSelection).on(
       "set",
-      // @ts-ignore
-      (value, callback): void => {
+      (value: number, callback): void => {
         this.log(`${this.name} set PowerModeSelection:  => ${value}`);
         // TODO: Launch TV Configuration
         callback();
@@ -73,19 +71,20 @@ export default class TV extends Base<TVConfig, Context> {
 
     if (this.config.code.channels) {
       const { channels } = this.config.code;
-      const channelNames = Object.keys(channels)
+      const channelNames = Object.keys(channels);
       const displayOrder = Buffer.alloc(channelNames.length * 6 + 2);
       let id = 0;
 
-      channelNames.forEach((channelName): void => {
-        displayOrder.writeUInt8(0x01, id * 6);
-        displayOrder.writeUInt8(4, id * 6 + 1);
-        displayOrder.writeUInt32LE(id + 1, id * 6 + 2);
-        const input = this.setupChannelInput(channelName, id+=1);
-        // @ts-ignore
-        service.addLinkedService(input);
-        this.channels.push(channelName);
-      })
+      channelNames.forEach(
+        (channelName): void => {
+          displayOrder.writeUInt8(0x01, id * 6);
+          displayOrder.writeUInt8(4, id * 6 + 1);
+          displayOrder.writeUInt32LE(id + 1, id * 6 + 2);
+          const input = this.setupChannelInput(channelName, (id += 1));
+          service.addLinkedService(input);
+          this.channels.push(channelName);
+        }
+      );
 
       service
         .getCharacteristic(Tools.Characteristic.DisplayOrder)
@@ -94,12 +93,14 @@ export default class TV extends Base<TVConfig, Context> {
       service
         .setCharacteristic(Tools.Characteristic.ActiveIdentifier, 0)
         .getCharacteristic(Tools.Characteristic.ActiveIdentifier)
-        // @ts-ignore
-        .on("set", (value, callback): void => {
-          this.sendData(["channels", this.channels[value]]);
-          service.updateCharacteristic(Tools.Characteristic.Active, 1);
-          callback();
-        });
+        .on(
+          "set",
+          (value: number, callback): void => {
+            this.sendData(["channels", this.channels[value]]);
+            service.updateCharacteristic(Tools.Characteristic.Active, 1);
+            callback();
+          }
+        );
     }
   }
 
@@ -144,25 +145,27 @@ export default class TV extends Base<TVConfig, Context> {
         .setCharacteristic(Tools.Characteristic.InputDeviceType, deviceType)
         .setCharacteristic(Tools.Characteristic.InputSourceType, sourceType);
 
-      // @ts-ignore
-      this.accessory.addService(inputService, true);
+      this.accessory.addService(inputService);
     }
 
     inputService
       .getCharacteristic(Tools.Characteristic.TargetVisibilityState)
-      // @ts-ignore
-      .on("set", (newValue, callback): void => {
-        // TODO: 
-        this.log(
-          `${this.name} set TargetVisibilityState of ${name}: => ${newValue}`
-        );
-        // @ts-ignore
-        inputService
-          .getCharacteristic(Tools.Characteristic.CurrentVisibilityState)
-          .updateValue(newValue);
+      .on(
+        "set",
+        (value: number, callback): void => {
+          // TODO: Add any actions
+          this.log(
+            `${this.name} set TargetVisibilityState of ${name}: => ${value}`
+          );
 
-        callback();
-      });
+          if (inputService) {
+            inputService
+              .getCharacteristic(Tools.Characteristic.CurrentVisibilityState)
+              .updateValue(value);
+          }
+          callback();
+        }
+      );
 
     return inputService;
   }
