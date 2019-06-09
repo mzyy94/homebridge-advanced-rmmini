@@ -67,6 +67,9 @@ export default class TV extends Base<TVConfig, Context> {
       .on(
         "set",
         (state: number, callback): void => {
+          if (this.context.state === state) {
+            return;
+          }
           this.log(
             `${this.name} set Active: ${this.context.state} => ${state}`
           );
