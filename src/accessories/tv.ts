@@ -2,6 +2,22 @@ import { Tools } from ".";
 import { TVConfig } from "../config";
 import Base from "./base";
 
+enum RemoteKey {
+  REWIND = 0,
+  FAST_FORWARD = 1,
+  NEXT_TRACK = 2,
+  PREVIOUS_TRACK = 3,
+  ARROW_UP = 4,
+  ARROW_DOWN = 5,
+  ARROW_LEFT = 6,
+  ARROW_RIGHT = 7,
+  SELECT = 8,
+  BACK = 9,
+  EXIT = 10,
+  PLAY_PAUSE = 11,
+  INFORMATION = 15
+}
+
 interface Context {
   state: number;
 }
@@ -102,6 +118,71 @@ export default class TV extends Base<TVConfig, Context> {
           }
         );
     }
+
+    if (this.config.code.controls) {
+      service
+        .getCharacteristic(Tools.Characteristic.RemoteKey)
+        .on("set", this.handleRemoteKeyInput.bind(this));
+
+      service.getCharacteristic(Tools.Characteristic.PictureMode).on(
+        "set",
+        (value: number, callback): void => {
+          this.log(`set PictureMode => ${value}`);
+          callback();
+        }
+      );
+    }
+  }
+
+  private handleRemoteKeyInput(
+    value: RemoteKey,
+    callback: HAPNodeJS.CharacteristicSetCallback
+  ): void {
+    this.log(`set RemoteKey => ${value}`);
+    switch (value) {
+      case RemoteKey.REWIND:
+        this.sendData(["controls", "rewind"]);
+        break;
+      case RemoteKey.FAST_FORWARD:
+        this.sendData(["controls", "fast_forward"]);
+        break;
+      case RemoteKey.NEXT_TRACK:
+        this.sendData(["controls", "next_track"]);
+        break;
+      case RemoteKey.PREVIOUS_TRACK:
+        this.sendData(["controls", "previous_track"]);
+        break;
+      case RemoteKey.ARROW_UP:
+        this.sendData(["controls", "arrow_up"]);
+        break;
+      case RemoteKey.ARROW_DOWN:
+        this.sendData(["controls", "arrow_down"]);
+        break;
+      case RemoteKey.ARROW_LEFT:
+        this.sendData(["controls", "arrow_left"]);
+        break;
+      case RemoteKey.ARROW_RIGHT:
+        this.sendData(["controls", "arrow_right"]);
+        break;
+      case RemoteKey.SELECT:
+        this.sendData(["controls", "select"]);
+        break;
+      case RemoteKey.BACK:
+        this.sendData(["controls", "back"]);
+        break;
+      case RemoteKey.EXIT:
+        this.sendData(["controls", "exit"]);
+        break;
+      case RemoteKey.PLAY_PAUSE:
+        this.sendData(["controls", "play_pause"]);
+        break;
+      case RemoteKey.INFORMATION:
+        this.sendData(["controls", "information"]);
+        break;
+      default:
+        this.log(`Unknown remote key code: ${value}`);
+    }
+    callback();
   }
 
   private setupChannelInput(name, id): HAPNodeJS.Service {

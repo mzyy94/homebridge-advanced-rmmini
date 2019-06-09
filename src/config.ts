@@ -58,6 +58,21 @@ export type Light = SteppingLight & {
 
 export type LightConfig = CommonConfig & Light;
 
+export type RemoteControls =
+  | "rewind"
+  | "fast_forward"
+  | "next_track"
+  | "previous_track"
+  | "arrow_up"
+  | "arrow_down"
+  | "arrow_left"
+  | "arrow_right"
+  | "select"
+  | "back"
+  | "exit"
+  | "play_pause"
+  | "information";
+
 export interface Television {
   type: "tv";
   code: {
@@ -66,6 +81,7 @@ export interface Television {
     channels?: {
       [name: string]: Code;
     };
+    controls?: { [name in RemoteControls]: Code };
   };
 }
 
