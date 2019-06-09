@@ -82,6 +82,7 @@ export interface Television {
       [name: string]: Code;
     };
     controls?: { [name in RemoteControls]: Code };
+    volume?: { [name in "increment" | "decrement"]: Code };
   };
 }
 

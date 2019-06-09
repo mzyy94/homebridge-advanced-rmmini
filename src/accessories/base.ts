@@ -27,7 +27,7 @@ export default class Base<T extends AccessoryConfig, C> {
         : param.reduce((object, key): object => object[key], this.config.code);
 
     if (!code) {
-      this.log(`${this.name}: Code ${param} not found.`)
+      this.log(`${this.name}: Code ${param} not found.`);
       return;
     }
 

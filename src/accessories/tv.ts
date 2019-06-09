@@ -18,6 +18,11 @@ enum RemoteKey {
   INFORMATION = 15
 }
 
+enum VolumeSelector {
+  INCREMENT = 0,
+  DECREMENT = 1
+}
+
 interface Context {
   state: number;
 }
@@ -134,6 +139,11 @@ export default class TV extends Base<TVConfig, Context> {
           callback();
         }
       );
+    }
+
+    if (this.config.code.volume) {
+      const speaker = this.setupSpeaker();
+      service.addLinkedService(speaker);
     }
   }
 
@@ -252,5 +262,49 @@ export default class TV extends Base<TVConfig, Context> {
       );
 
     return inputService;
+  }
+
+  private setupSpeaker(): HAPNodeJS.Service {
+    const subType = "speaker";
+    let speakerService = this.accessory.services.find(
+      (service): boolean => service.subtype === subType
+    );
+
+    if (!speakerService) {
+      speakerService = new Tools.Service.TelevisionSpeaker(subType, subType);
+
+      speakerService
+        .setCharacteristic(
+          Tools.Characteristic.Active,
+          // @ts-ignore
+          Tools.Characteristic.Active.ACTIVE
+        )
+        .setCharacteristic(
+          Tools.Characteristic.VolumeControlType,
+          // @ts-ignore
+          Tools.Characteristic.VolumeControlType.RELATIVE
+        );
+
+      this.accessory.addService(speakerService);
+    }
+
+    speakerService.getCharacteristic(Tools.Characteristic.VolumeSelector).on(
+      "set",
+      (value: VolumeSelector, callback): void => {
+        switch (value) {
+          case VolumeSelector.INCREMENT:
+            this.sendData(["volume", "increment"]);
+            break;
+          case VolumeSelector.DECREMENT:
+            this.sendData(["volume", "decrement"]);
+            break;
+          default:
+            this.log(`Unknown volume control: ${value}`);
+        }
+        callback();
+      }
+    );
+
+    return speakerService;
   }
 }
