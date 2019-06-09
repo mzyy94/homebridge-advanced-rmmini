@@ -37,7 +37,10 @@ export class ERemotePlatform {
   }
 
   public configureAccessory(accessory: Homebridge.PlatformAccessory): void {
-    const acc = createAccessory(accessory.context.config, this.log, accessory);
+    const config: AccessoryConfig = this.config.accessories.find(
+      (acc: AccessoryConfig): boolean => acc.name === accessory.displayName
+    );
+    const acc = createAccessory(config, this.log, accessory);
     this.accessories.set(accessory.context.name, acc);
   }
 

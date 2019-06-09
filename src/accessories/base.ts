@@ -56,8 +56,8 @@ export default class Base<T extends AccessoryConfig, C> {
       this.accessory.addService(service);
       this.accessory.reachable = true;
       this.accessory.context.name = config.name;
-      this.accessory.context.config = config;
     }
+    this.accessory.context.config = config;
 
     this.accessory.on("identify", this.onIdentify.bind(this));
 
