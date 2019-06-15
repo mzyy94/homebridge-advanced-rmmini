@@ -93,6 +93,16 @@ export interface Television {
 
 export type TVConfig = CommonConfig & Television;
 
-export type Accessories = Switch | Light | Television;
+export interface Fan {
+  type: "fan";
+  code: {
+    on: Code;
+    off: Code;
+  };
+}
+
+export type FanConfig = CommonConfig & Fan;
+
+export type Accessories = Switch | Light | Television | Fan;
 
 export type AccessoryConfig = CommonConfig & Accessories;

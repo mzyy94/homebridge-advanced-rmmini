@@ -3,11 +3,13 @@ import {
   AccessoryConfig,
   SwitchConfig,
   LightConfig,
-  TVConfig
+  TVConfig,
+  FanConfig
 } from "../config";
 import Switch from "./switch";
 import Light from "./light";
 import TV from "./tv";
+import Fan from "./fan";
 
 export const createAccessory = (
   config: AccessoryConfig,
@@ -21,6 +23,8 @@ export const createAccessory = (
       return new Light(config as LightConfig, log, accessory);
     case "tv":
       return new TV(config as TVConfig, log, accessory);
+    case "fan":
+      return new Fan(config as FanConfig, log, accessory);
     default:
       throw new TypeError("Invalid type of accessory");
   }
