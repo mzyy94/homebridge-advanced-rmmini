@@ -95,8 +95,7 @@ export class BroadlinkData {
     return [
       0x26,
       this.repeat - 1,
-      trimmedLength,
-      0,
+      ...Buffer.from(new Uint16Array([trimmedLength]).buffer),
       ...buffer.values(),
       ...Buffer.alloc(16)
     ];

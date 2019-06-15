@@ -149,7 +149,8 @@ export class AEHA {
 
   public static fromSendData(data: string): AEHA {
     const buffer = Buffer.from(data, "hex");
-    const main = buffer.subarray(4, buffer.readUInt8(2) + 4);
+    const length = buffer.readUInt16LE(2);
+    const main = buffer.subarray(4, length + 4);
     const numArray: number[] = [];
     for (let i = 0; i < main.byteLength; i += 1) {
       const value = main.readUInt8(i);
