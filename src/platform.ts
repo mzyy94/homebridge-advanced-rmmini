@@ -37,9 +37,17 @@ export class ERemotePlatform {
   }
 
   public configureAccessory(accessory: Homebridge.PlatformAccessory): void {
-    const config: AccessoryConfig = this.config.accessories.find(
+    let config: AccessoryConfig | undefined = this.config.accessories.find(
       (acc: AccessoryConfig): boolean => acc.name === accessory.displayName
     );
+    if (config === undefined) {
+      this.log(
+        `No config of accessory named "${
+          accessory.displayName
+        }" found. This accessory might be removed.`
+      );
+      config = accessory.context.config as AccessoryConfig;
+    }
     const acc = createAccessory(config, this.log, accessory);
     this.accessories.set(accessory.context.name, acc);
   }
@@ -75,10 +83,12 @@ export class ERemotePlatform {
     this.log("didFinishLaunching");
     this.config.accessories.forEach(this.addAccessory.bind(this));
 
-    [...this.accessories.values()].forEach(
-      (accessory): void => {
-        if (!accessory.currentAccessory.reachable)
+    [...this.accessories.entries()].forEach(
+      ([name, accessory]): void => {
+        if (!accessory.currentAccessory.reachable) {
           this.removeAccessory(accessory);
+          this.accessories.delete(name);
+        }
       }
     );
 
