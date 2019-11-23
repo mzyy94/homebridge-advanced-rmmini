@@ -27,16 +27,17 @@
   },
   "homepage": "https://github.com/mzyy94/homebridge-eRemote#readme",
   "devDependencies": {
-    "@types/node": "^12.0.0",
-    "@typescript-eslint/eslint-plugin": "^1.7.0",
-    "ava": "^1.4.1",
-    "eslint": "^5.16.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-config-prettier": "^4.2.0",
-    "eslint-plugin-import": "^2.17.2",
+    "@types/node": "^12.12.12",
+    "@typescript-eslint/eslint-plugin": "^2.8.0",
+    "@typescript-eslint/parser": "^2.8.0",
+    "ava": "^2.4.0",
+    "eslint": "^6.7.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-import": "^2.18.2",
     "hap-nodejs": "mzyy94/HAP-NodeJS#ee895b0",
-    "prettier": "^1.17.0",
-    "typescript": "^3.4.5"
+    "prettier": "^1.19.1",
+    "typescript": "^3.7.2"
   },
   "dependencies": {
     "broadlinkjs-rm": "^0.6.0"
