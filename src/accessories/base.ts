@@ -1,5 +1,5 @@
 import { Tools } from ".";
-import { AccessoryConfig, Code } from "../config";
+import { AccessoryConfig, Code, FrameConfig, isFrameConfig } from "../config";
 import sendData from "../remote";
 
 export default class Base<T extends AccessoryConfig, C> {
@@ -18,13 +18,22 @@ export default class Base<T extends AccessoryConfig, C> {
   }
 
   protected async sendData(
-    param: string | string[],
+    param: string | string[] | FrameConfig,
     repeat = 1
   ): Promise<void> {
-    const code: Code | undefined =
-      typeof param === "string"
-        ? this.config.code[param]
-        : param.reduce((object, key): object => object[key], this.config.code);
+    let code: Code | undefined;
+
+    if (isFrameConfig(param)) {
+      code = param;
+    } else {
+      code =
+        typeof param === "string"
+          ? this.config.code[param]
+          : param.reduce(
+              (object, key): object => object[key],
+              this.config.code
+            );
+    }
 
     if (!code) {
       this.log(`${this.name}: Code ${param} not found.`);

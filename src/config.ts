@@ -15,6 +15,11 @@ export interface FrameData {
   replacer?: Replacer[];
 }
 
+// eslint-disable-next-line import/prefer-default-export, @typescript-eslint/no-explicit-any
+export const isFrameConfig = (arg: any): arg is FrameConfig => {
+  return !!arg && typeof arg === "object" && arg.frames !== undefined;
+};
+
 export type Code = string | FrameConfig;
 
 export interface CommonConfig {
@@ -105,6 +110,16 @@ export type FanConfig = CommonConfig & Fan;
 
 export interface AirConditioner {
   type: "ac";
+  cooler?: {
+    min?: number;
+    max?: number;
+    step?: number;
+  };
+  heater?: {
+    min?: number;
+    max?: number;
+    step?: number;
+  };
   code: {
     on: Code;
     off: Code;
