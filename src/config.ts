@@ -125,6 +125,7 @@ export interface AirConditioner {
     max?: number;
     step?: number;
   };
+  dry?: boolean;
   code: {
     on: Code;
     off: Code;
