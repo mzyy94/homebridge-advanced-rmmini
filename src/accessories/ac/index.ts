@@ -1,4 +1,4 @@
-import { Tools } from "../";
+import { Tools } from "..";
 import { AirConditionerConfig } from "../../config";
 import Base from "../base";
 
@@ -35,8 +35,8 @@ export default class AirConditioner extends Base<
       this.context.direction = 0;
       this.context.speed = 0;
       this.context.temperature = 20;
-      this.context.cooler = 16;
-      this.context.heater = 30;
+      this.context.cooler = 20;
+      this.context.heater = 20;
     }
 
     this.setService();
@@ -64,6 +64,7 @@ export default class AirConditioner extends Base<
             `CurrentHeaterCoolerState:${state} from ${this.context.state}`
           );
           this.context.state = state;
+          this.sendAC();
           callback();
         }
       );
@@ -80,6 +81,7 @@ export default class AirConditioner extends Base<
             `TargetHeaterCoolerState:${state} from ${this.context.state}`
           );
           this.context.state = state;
+          this.sendAC();
           callback();
         }
       );
@@ -92,6 +94,11 @@ export default class AirConditioner extends Base<
 
     service
       .getCharacteristic(Tools.Characteristic.CoolingThresholdTemperature)
+      .setProps({
+        maxValue: this.config.cooler?.max as number,
+        minValue: this.config.cooler?.min as number,
+        minStep: this.config.cooler?.step as number
+      } as HAPNodeJS.CharacteristicProps)
       .on("get", (cb: HAPNodeJS.CharacteristicGetCallback): void => {
         cb(null, this.context.cooler);
       })
@@ -102,12 +109,18 @@ export default class AirConditioner extends Base<
             `CoolingThresholdTemperature:${cooler} from ${this.context.cooler}`
           );
           this.context.cooler = cooler;
+          this.sendAC();
           callback();
         }
       );
 
     service
       .getCharacteristic(Tools.Characteristic.HeatingThresholdTemperature)
+      .setProps({
+        maxValue: this.config.heater?.max as number,
+        minValue: this.config.heater?.min as number,
+        minStep: this.config.heater?.step as number
+      } as HAPNodeJS.CharacteristicProps)
       .on("get", (cb: HAPNodeJS.CharacteristicGetCallback): void => {
         cb(null, this.context.heater);
       })
@@ -118,6 +131,7 @@ export default class AirConditioner extends Base<
             `HeatingThresholdTemperature:${heater} from ${this.context.heater}`
           );
           this.context.heater = heater;
+          this.sendAC();
           callback();
         }
       );
@@ -132,6 +146,7 @@ export default class AirConditioner extends Base<
         (direction: number, callback: HAPNodeJS.CharacteristicSetCallback) => {
           this.log(`SwingMode:${direction} from ${this.context.direction}`);
           this.context.direction = direction;
+          this.sendAC();
           callback();
         }
       );
@@ -146,6 +161,7 @@ export default class AirConditioner extends Base<
         (speed: number, callback: HAPNodeJS.CharacteristicSetCallback) => {
           this.log(`RotationSpeed:${speed} from ${this.context.speed}`);
           this.context.speed = speed;
+          this.sendAC();
           callback();
         }
       );
@@ -163,6 +179,11 @@ export default class AirConditioner extends Base<
 
     this.context.active = active;
 
+    this.sendAC();
     callback();
+  }
+
+  protected sendAC(): void {
+    this.log(new Error("Override this sendAC method"));
   }
 }
