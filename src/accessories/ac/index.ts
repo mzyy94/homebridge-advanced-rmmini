@@ -56,41 +56,21 @@ export default class AirConditioner extends Base<
       .on("get", (cb: HAPNodeJS.CharacteristicGetCallback): void => {
         cb(null, this.context.active);
       })
-      .on("set", this.onSetPowerState.bind(this));
+      .on("set", this.setContext("active"));
 
     service
       .getCharacteristic(Tools.Characteristic.CurrentHeaterCoolerState)
       .on("get", (cb: HAPNodeJS.CharacteristicGetCallback): void => {
         cb(null, this.context.state);
       })
-      .on(
-        "set",
-        (state: number, callback: HAPNodeJS.CharacteristicSetCallback) => {
-          this.log(
-            `CurrentHeaterCoolerState:${state} from ${this.context.state}`
-          );
-          this.context.state = state;
-          this.sendAC();
-          callback();
-        }
-      );
+      .on("set", this.setContext("state"));
 
     service
       .getCharacteristic(Tools.Characteristic.TargetHeaterCoolerState)
       .on("get", (cb: HAPNodeJS.CharacteristicGetCallback): void => {
         cb(null, this.context.state);
       })
-      .on(
-        "set",
-        (state: number, callback: HAPNodeJS.CharacteristicSetCallback) => {
-          this.log(
-            `TargetHeaterCoolerState:${state} from ${this.context.state}`
-          );
-          this.context.state = state;
-          this.sendAC();
-          callback();
-        }
-      );
+      .on("set", this.setContext("state"));
 
     service
       .getCharacteristic(Tools.Characteristic.CurrentTemperature)
@@ -108,17 +88,7 @@ export default class AirConditioner extends Base<
       .on("get", (cb: HAPNodeJS.CharacteristicGetCallback): void => {
         cb(null, this.context.cooler);
       })
-      .on(
-        "set",
-        (cooler: number, callback: HAPNodeJS.CharacteristicSetCallback) => {
-          this.log(
-            `CoolingThresholdTemperature:${cooler} from ${this.context.cooler}`
-          );
-          this.context.cooler = cooler;
-          this.sendAC();
-          callback();
-        }
-      );
+      .on("set", this.setContext("cooler"));
 
     service
       .getCharacteristic(Tools.Characteristic.HeatingThresholdTemperature)
@@ -130,32 +100,14 @@ export default class AirConditioner extends Base<
       .on("get", (cb: HAPNodeJS.CharacteristicGetCallback): void => {
         cb(null, this.context.heater);
       })
-      .on(
-        "set",
-        (heater: number, callback: HAPNodeJS.CharacteristicSetCallback) => {
-          this.log(
-            `HeatingThresholdTemperature:${heater} from ${this.context.heater}`
-          );
-          this.context.heater = heater;
-          this.sendAC();
-          callback();
-        }
-      );
+      .on("set", this.setContext("heater"));
 
     service
       .getCharacteristic(Tools.Characteristic.SwingMode)
       .on("get", (cb: HAPNodeJS.CharacteristicGetCallback): void => {
         cb(null, this.context.direction);
       })
-      .on(
-        "set",
-        (direction: number, callback: HAPNodeJS.CharacteristicSetCallback) => {
-          this.log(`SwingMode:${direction} from ${this.context.direction}`);
-          this.context.direction = direction;
-          this.sendAC();
-          callback();
-        }
-      );
+      .on("set", this.setContext("direction"));
 
     service
       .getCharacteristic(Tools.Characteristic.RotationSpeed)
@@ -167,32 +119,24 @@ export default class AirConditioner extends Base<
       .on("get", (cb: HAPNodeJS.CharacteristicGetCallback): void => {
         cb(null, this.context.speed);
       })
-      .on(
-        "set",
-        (speed: number, callback: HAPNodeJS.CharacteristicSetCallback) => {
-          this.log(`RotationSpeed:${speed} from ${this.context.speed}`);
-          this.context.speed = speed;
-          this.sendAC();
-          callback();
-        }
-      );
+      .on("set", this.setContext("speed"));
   }
 
-  private onSetPowerState(
-    active: number,
+  private setContext = (key: keyof Context) => (
+    value: number,
     callback: HAPNodeJS.CharacteristicSetCallback
-  ): void {
-    if (active === this.context.active) {
+  ): void => {
+    if (value === this.context[key]) {
       callback();
       return;
     }
-    this.log(`${this.name} set active: ${this.context.active} => ${active}`);
+    this.log(`${this.name} set ${key}: ${this.context[key]} => ${value}`);
 
-    this.context.active = active;
+    this.context[key] = value;
 
     this.sendAC();
     callback();
-  }
+  };
 
   protected sendAC(): void {
     this.log(new Error("Override this sendAC method"));
