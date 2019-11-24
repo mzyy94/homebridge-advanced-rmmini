@@ -2,8 +2,14 @@ import { Tools } from "..";
 import { AirConditionerConfig } from "../../config";
 import Base from "../base";
 
+export enum State {
+  auto = 0,
+  heater = 1,
+  cooler = 2
+}
+
 interface Context {
-  state: number;
+  state: State;
   active: number;
   direction: number;
   speed: number;
