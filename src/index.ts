@@ -5,8 +5,8 @@
 
 import { ERemotePlatform, setHomebridgeProperties } from "./platform";
 
-const PLUGIN_NAME = "eremote-hub";
-const PLATFORM_NAME = "eRemote";
+const PLUGIN_NAME = "homebridge-advanced-rmmini";
+const PLATFORM_NAME = "AdvancedRM";
 
 export default (homebridge: Homebridge.Homebridge & Homebridge.API): void => {
   setHomebridgeProperties(homebridge);

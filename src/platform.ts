@@ -2,8 +2,8 @@ import { Tools, createAccessory } from "./accessories";
 import { RootConfig, AccessoryConfig } from "./config";
 import Base from "./accessories/base";
 
-const PLUGIN_NAME = "eremote-hub";
-const PLATFORM_NAME = "eRemote";
+const PLUGIN_NAME = "homebridge-advanced-rmmini";
+const PLATFORM_NAME = "AdvancedRM";
 
 export const setHomebridgeProperties = ({
   hap,

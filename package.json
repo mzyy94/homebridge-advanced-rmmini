@@ -1,5 +1,5 @@
 {
-  "name": "homebridge-eremote",
+  "name": "homebridge-advanced-rmmini",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mzyy94/homebridge-eRemote.git"
+    "url": "git+https://github.com/mzyy94/homebridge-advanced-rmmini.git"
   },
   "keywords": [
     "homebridge-plugin"
@@ -23,9 +23,9 @@
   "author": "mzyy94",
   "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/mzyy94/homebridge-eRemote/issues"
+    "url": "https://github.com/mzyy94/homebridge-advanced-rmmini/issues"
   },
-  "homepage": "https://github.com/mzyy94/homebridge-eRemote#readme",
+  "homepage": "https://github.com/mzyy94/homebridge-advanced-rmmini#readme",
   "devDependencies": {
     "@types/node": "^12.12.12",
     "@typescript-eslint/eslint-plugin": "^2.8.0",
