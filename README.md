@@ -1,1 +1,3 @@
-# homebridge-eRemote
+# homebridge-advanced-rmmini
+
+Work in progress.
