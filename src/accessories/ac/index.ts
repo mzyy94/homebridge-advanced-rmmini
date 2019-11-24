@@ -2,14 +2,22 @@ import { Tools } from "..";
 import { AirConditionerConfig } from "../../config";
 import Base from "../base";
 
-export enum State {
-  auto = 0,
-  heater = 1,
-  cooler = 2
+export enum CurrentState {
+  INACTIVE = 0,
+  IDLE = 1,
+  HEATING = 2,
+  COOLING = 3
+}
+
+export enum TargetState {
+  AUTO = 0,
+  HEATER = 1,
+  COOLER = 2
 }
 
 interface Context {
-  state: State;
+  current: number;
+  target: number;
   active: number;
   direction: number;
   speed: number;
@@ -36,7 +44,8 @@ export default class AirConditioner extends Base<
     );
 
     if (!accessory) {
-      this.context.state = 0;
+      this.context.current = 0;
+      this.context.target = 0;
       this.context.active = 0;
       this.context.direction = 0;
       this.context.speed = 0;
@@ -58,19 +67,42 @@ export default class AirConditioner extends Base<
       })
       .on("set", this.setContext("active"));
 
-    service
-      .getCharacteristic(Tools.Characteristic.CurrentHeaterCoolerState)
+    const currentHeaterCoolerState = service.getCharacteristic(
+      Tools.Characteristic.CurrentHeaterCoolerState
+    );
+
+    currentHeaterCoolerState
       .on("get", (cb: HAPNodeJS.CharacteristicGetCallback): void => {
-        cb(null, this.context.state);
+        cb(null, this.context.current);
       })
-      .on("set", this.setContext("state"));
+      .on("set", this.setContext("current"));
 
     service
       .getCharacteristic(Tools.Characteristic.TargetHeaterCoolerState)
       .on("get", (cb: HAPNodeJS.CharacteristicGetCallback): void => {
-        cb(null, this.context.state);
+        cb(null, this.context.target);
       })
-      .on("set", this.setContext("state"));
+      .on("set", (value: TargetState, callback) => {
+        if (this.context.active) {
+          switch (value) {
+            case TargetState.COOLER:
+              currentHeaterCoolerState.updateValue(CurrentState.COOLING);
+              break;
+            case TargetState.HEATER:
+              currentHeaterCoolerState.updateValue(CurrentState.HEATING);
+              break;
+            default:
+              currentHeaterCoolerState.updateValue(
+                this.context.temperature < this.config.threshold
+                  ? CurrentState.HEATING
+                  : CurrentState.COOLING
+              );
+          }
+        } else {
+          currentHeaterCoolerState.updateValue(CurrentState.INACTIVE);
+        }
+        this.setContext("target")(value, callback);
+      });
 
     service
       .getCharacteristic(Tools.Characteristic.CurrentTemperature)
