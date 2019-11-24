@@ -126,6 +126,7 @@ export interface AirConditioner {
     step?: number;
   };
   dry?: boolean;
+  threshold: number;
   code: {
     on: Code;
     off: Code;
