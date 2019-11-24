@@ -103,7 +103,17 @@ export interface Fan {
 
 export type FanConfig = CommonConfig & Fan;
 
-export type Accessories = Switch | Light | Television | Fan;
+export interface AirConditioner {
+  type: "ac";
+  code: {
+    on: Code;
+    off: Code;
+  };
+}
+
+export type AirConditionerConfig = CommonConfig & AirConditioner;
+
+export type Accessories = Switch | Light | Television | Fan | AirConditioner;
 
 export type AccessoryConfig = CommonConfig & Accessories;
 
