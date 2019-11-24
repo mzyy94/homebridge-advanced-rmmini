@@ -153,6 +153,11 @@ export default class AirConditioner extends Base<
 
     service
       .getCharacteristic(Tools.Characteristic.RotationSpeed)
+      .setProps({
+        maxValue: this.config.speed?.max as number,
+        minValue: this.config.speed?.min as number,
+        minStep: this.config.speed?.step as number
+      } as HAPNodeJS.CharacteristicProps)
       .on("get", (cb: HAPNodeJS.CharacteristicGetCallback): void => {
         cb(null, this.context.speed);
       })

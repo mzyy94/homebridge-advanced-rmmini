@@ -120,6 +120,11 @@ export interface AirConditioner {
     max?: number;
     step?: number;
   };
+  speed?: {
+    min?: number;
+    max?: number;
+    step?: number;
+  };
   code: {
     on: Code;
     off: Code;
