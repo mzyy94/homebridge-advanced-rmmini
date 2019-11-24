@@ -10,7 +10,11 @@ interface Context {
 }
 
 export default class Fan extends Base<FanConfig, Context> {
-  public constructor(config: FanConfig, log: Function, accessory?: any) {
+  public constructor(
+    config: FanConfig,
+    log: Function,
+    accessory?: Homebridge.PlatformAccessory
+  ) {
     super(
       config,
       log,
@@ -34,12 +38,9 @@ export default class Fan extends Base<FanConfig, Context> {
 
     service
       .getCharacteristic(Tools.Characteristic.Active)
-      .on(
-        "get",
-        (cb: HAPNodeJS.CharacteristicGetCallback): void => {
-          cb(null, this.context.active);
-        }
-      )
+      .on("get", (cb: HAPNodeJS.CharacteristicGetCallback): void => {
+        cb(null, this.context.active);
+      })
       .on("set", this.onSetPowerState.bind(this));
   }
 

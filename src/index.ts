@@ -1,6 +1,6 @@
-// eslint-disable-next-line spaced-comment, @typescript-eslint/no-triple-slash-reference
+// eslint-disable-next-line spaced-comment, @typescript-eslint/triple-slash-reference
 /// <reference path="../node_modules/hap-nodejs/index.d.ts" />
-// eslint-disable-next-line spaced-comment, @typescript-eslint/no-triple-slash-reference
+// eslint-disable-next-line spaced-comment, @typescript-eslint/triple-slash-reference
 /// <reference path="./homebridge.d.ts" />
 
 import { ERemotePlatform, setHomebridgeProperties } from "./platform";
@@ -8,7 +8,7 @@ import { ERemotePlatform, setHomebridgeProperties } from "./platform";
 const PLUGIN_NAME = "eremote-hub";
 const PLATFORM_NAME = "eRemote";
 
-export default (homebridge: any): void => {
+export default (homebridge: Homebridge.Homebridge & Homebridge.API): void => {
   setHomebridgeProperties(homebridge);
   homebridge.registerPlatform(
     PLUGIN_NAME,

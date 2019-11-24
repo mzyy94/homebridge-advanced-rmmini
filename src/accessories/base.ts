@@ -19,7 +19,7 @@ export default class Base<T extends AccessoryConfig, C> {
 
   protected async sendData(
     param: string | string[],
-    repeat: number = 1
+    repeat = 1
   ): Promise<void> {
     const code: Code | undefined =
       typeof param === "string"
@@ -43,7 +43,7 @@ export default class Base<T extends AccessoryConfig, C> {
     config: T,
     log: Function,
     typeCode?: number,
-    service?: HAPNodeJS.PredefinedService,
+    service?: HAPNodeJS.PredefinedService | HAPNodeJS.Service,
     accessory?: Homebridge.PlatformAccessory
   ) {
     this.log = log;
@@ -72,6 +72,7 @@ export default class Base<T extends AccessoryConfig, C> {
         );
         return Reflect.set(target, prop, value);
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       get: (target, prop): any => {
         this.log(`${this.name} get value of ${String(prop)}: ${target[prop]}`);
         return Reflect.get(target, prop);
@@ -116,7 +117,7 @@ export default class Base<T extends AccessoryConfig, C> {
     callback();
   }
 
-  public get currentAccessory(): any {
+  public get currentAccessory(): Homebridge.PlatformAccessory {
     return this.accessory;
   }
 }

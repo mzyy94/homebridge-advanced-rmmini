@@ -15,7 +15,7 @@ export const createAccessory = (
   config: AccessoryConfig,
   log: Function,
   accessory?: Homebridge.PlatformAccessory
-): Base<AccessoryConfig, any> => {
+): Base<AccessoryConfig, unknown> => {
   switch (config.type) {
     case "switch":
       return new Switch(config as SwitchConfig, log, accessory);
@@ -31,7 +31,7 @@ export const createAccessory = (
 };
 
 export class Tools {
-  private static platformAccessory: any;
+  private static platformAccessory: Homebridge.PlatformAccessoryConstructor;
 
   private static accessory: HAPNodeJS.Accessory;
 
@@ -41,7 +41,7 @@ export class Tools {
 
   private static uuid: HAPNodeJS.uuid;
 
-  public static get PlatformAccessory(): any {
+  public static get PlatformAccessory(): Homebridge.PlatformAccessoryConstructor {
     return Tools.platformAccessory;
   }
 
@@ -62,7 +62,7 @@ export class Tools {
   }
 
   public static initialize = (
-    platformAccessory: any,
+    platformAccessory: Homebridge.PlatformAccessoryConstructor,
     accessory: HAPNodeJS.Accessory,
     service: HAPNodeJS.Service,
     characteristic: HAPNodeJS.Characteristic,

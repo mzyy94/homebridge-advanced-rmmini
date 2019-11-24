@@ -7,7 +7,11 @@ interface Context {
 }
 
 export default class Switch extends Base<SwitchConfig, Context> {
-  public constructor(config: SwitchConfig, log: Function, accessory?: any) {
+  public constructor(
+    config: SwitchConfig,
+    log: Function,
+    accessory?: Homebridge.PlatformAccessory
+  ) {
     super(
       config,
       log,
@@ -27,10 +31,8 @@ export default class Switch extends Base<SwitchConfig, Context> {
     this.accessory
       .getService(Tools.Service.Switch)
       .getCharacteristic(Tools.Characteristic.On)
-      .on(
-        "get",
-        (cb: HAPNodeJS.CharacteristicGetCallback<boolean>): void =>
-          cb(null, this.context.currentState)
+      .on("get", (cb: HAPNodeJS.CharacteristicGetCallback<boolean>): void =>
+        cb(null, this.context.currentState)
       )
       .on("set", this.onSetState.bind(this));
   }

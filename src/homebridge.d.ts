@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, import/prefer-default-export */
+
 declare namespace Homebridge {
   export interface Homebridge {
     hap: HAPNodeJS.HAPNodeJS;
     api: API;
-    platformAccessory: PlatformAccessory;
+    platformAccessory: PlatformAccessoryConstructor;
   }
 
   export class API {
@@ -110,5 +112,9 @@ declare namespace Homebridge {
       type: string,
       listener: (paired: boolean, callback: Function) => void
     ) => void;
+  }
+
+  export interface PlatformAccessoryConstructor {
+    new (name: string, uuid: string, typeCode: number): PlatformAccessory;
   }
 }

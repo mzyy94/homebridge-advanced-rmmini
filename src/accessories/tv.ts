@@ -30,14 +30,17 @@ interface Context {
 export default class TV extends Base<TVConfig, Context> {
   private channels: string[];
 
-  public constructor(config: TVConfig, log: Function, accessory?: any) {
+  public constructor(
+    config: TVConfig,
+    log: Function,
+    accessory?: Homebridge.PlatformAccessory
+  ) {
     const Television = new Tools.Service.Television(config.name, config.name);
 
     super(
       config,
       log,
       Tools.Accessory.Categories.TELEVISION,
-      // @ts-ignore
       Television,
       accessory
     );
@@ -58,40 +61,33 @@ export default class TV extends Base<TVConfig, Context> {
 
     service.setCharacteristic(
       Tools.Characteristic.SleepDiscoveryMode,
+      /* eslint-disable-next-line @typescript-eslint/ban-ts-ignore */
       // @ts-ignore
       Tools.Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE
     );
 
     service
       .getCharacteristic(Tools.Characteristic.Active)
-      .on(
-        "get",
-        (cb: HAPNodeJS.CharacteristicGetCallback<number>): void =>
-          cb(null, this.context.state)
+      .on("get", (cb: HAPNodeJS.CharacteristicGetCallback<number>): void =>
+        cb(null, this.context.state)
       )
-      .on(
-        "set",
-        (state: number, callback): void => {
-          if (this.context.state === state) {
-            return;
-          }
-          this.log(
-            `${this.name} set Active: ${this.context.state} => ${state}`
-          );
-          this.sendData(state === 1 ? "on" : "off");
-          this.context.state = state;
-          callback();
+      .on("set", (state: number, callback): void => {
+        if (this.context.state === state) {
+          return;
         }
-      );
+        this.log(`${this.name} set Active: ${this.context.state} => ${state}`);
+        this.sendData(state === 1 ? "on" : "off");
+        this.context.state = state;
+        callback();
+      });
 
-    service.getCharacteristic(Tools.Characteristic.PowerModeSelection).on(
-      "set",
-      (value: number, callback): void => {
+    service
+      .getCharacteristic(Tools.Characteristic.PowerModeSelection)
+      .on("set", (value: number, callback): void => {
         this.log(`${this.name} set PowerModeSelection:  => ${value}`);
         // TODO: Launch TV Configuration
         callback();
-      }
-    );
+      });
 
     if (this.config.code.channels) {
       const { channels } = this.config.code;
@@ -99,16 +95,14 @@ export default class TV extends Base<TVConfig, Context> {
       const displayOrder = Buffer.alloc(channelNames.length * 6 + 2);
       let id = 0;
 
-      channelNames.forEach(
-        (channelName): void => {
-          displayOrder.writeUInt8(0x01, id * 6);
-          displayOrder.writeUInt8(4, id * 6 + 1);
-          displayOrder.writeUInt32LE(id + 1, id * 6 + 2);
-          const input = this.setupChannelInput(channelName, (id += 1));
-          service.addLinkedService(input);
-          this.channels.push(channelName);
-        }
-      );
+      channelNames.forEach((channelName): void => {
+        displayOrder.writeUInt8(0x01, id * 6);
+        displayOrder.writeUInt8(4, id * 6 + 1);
+        displayOrder.writeUInt32LE(id + 1, id * 6 + 2);
+        const input = this.setupChannelInput(channelName, (id += 1));
+        service.addLinkedService(input);
+        this.channels.push(channelName);
+      });
 
       service
         .getCharacteristic(Tools.Characteristic.DisplayOrder)
@@ -117,14 +111,11 @@ export default class TV extends Base<TVConfig, Context> {
       service
         .setCharacteristic(Tools.Characteristic.ActiveIdentifier, 0)
         .getCharacteristic(Tools.Characteristic.ActiveIdentifier)
-        .on(
-          "set",
-          (value: number, callback): void => {
-            this.sendData(["channels", this.channels[value]]);
-            service.updateCharacteristic(Tools.Characteristic.Active, 1);
-            callback();
-          }
-        );
+        .on("set", (value: number, callback): void => {
+          this.sendData(["channels", this.channels[value]]);
+          service.updateCharacteristic(Tools.Characteristic.Active, 1);
+          callback();
+        });
     }
 
     if (this.config.code.controls) {
@@ -132,13 +123,12 @@ export default class TV extends Base<TVConfig, Context> {
         .getCharacteristic(Tools.Characteristic.RemoteKey)
         .on("set", this.handleRemoteKeyInput.bind(this));
 
-      service.getCharacteristic(Tools.Characteristic.PictureMode).on(
-        "set",
-        (value: number, callback): void => {
+      service
+        .getCharacteristic(Tools.Characteristic.PictureMode)
+        .on("set", (value: number, callback): void => {
           this.log(`set PictureMode => ${value}`);
           callback();
-        }
-      );
+        });
     }
 
     if (this.config.code.volume) {
@@ -202,8 +192,10 @@ export default class TV extends Base<TVConfig, Context> {
     return this.setupInput(
       name,
       id,
+      /* eslint-disable-next-line @typescript-eslint/ban-ts-ignore */
       // @ts-ignore
       Tools.Characteristic.InputDeviceType.TV,
+      /* eslint-disable-next-line @typescript-eslint/ban-ts-ignore */
       // @ts-ignore
       Tools.Characteristic.InputSourceType.TUNER
     );
@@ -223,16 +215,19 @@ export default class TV extends Base<TVConfig, Context> {
         .setCharacteristic(Tools.Characteristic.ConfiguredName, name)
         .setCharacteristic(
           Tools.Characteristic.IsConfigured,
+          /* eslint-disable-next-line @typescript-eslint/ban-ts-ignore */
           // @ts-ignore
           Tools.Characteristic.IsConfigured.CONFIGURED
         )
         .setCharacteristic(
           Tools.Characteristic.CurrentVisibilityState,
+          /* eslint-disable-next-line @typescript-eslint/ban-ts-ignore */
           // @ts-ignore
           Tools.Characteristic.CurrentVisibilityState.SHOWN
         )
         .setCharacteristic(
           Tools.Characteristic.TargetVisibilityState,
+          /* eslint-disable-next-line @typescript-eslint/ban-ts-ignore */
           // @ts-ignore
           Tools.Characteristic.TargetVisibilityState.SHOWN
         )
@@ -244,22 +239,19 @@ export default class TV extends Base<TVConfig, Context> {
 
     inputService
       .getCharacteristic(Tools.Characteristic.TargetVisibilityState)
-      .on(
-        "set",
-        (value: number, callback): void => {
-          // TODO: Add any actions
-          this.log(
-            `${this.name} set TargetVisibilityState of ${name}: => ${value}`
-          );
+      .on("set", (value: number, callback): void => {
+        // TODO: Add any actions
+        this.log(
+          `${this.name} set TargetVisibilityState of ${name}: => ${value}`
+        );
 
-          if (inputService) {
-            inputService
-              .getCharacteristic(Tools.Characteristic.CurrentVisibilityState)
-              .updateValue(value);
-          }
-          callback();
+        if (inputService) {
+          inputService
+            .getCharacteristic(Tools.Characteristic.CurrentVisibilityState)
+            .updateValue(value);
         }
-      );
+        callback();
+      });
 
     return inputService;
   }
@@ -276,11 +268,13 @@ export default class TV extends Base<TVConfig, Context> {
       speakerService
         .setCharacteristic(
           Tools.Characteristic.Active,
+          /* eslint-disable-next-line @typescript-eslint/ban-ts-ignore */
           // @ts-ignore
           Tools.Characteristic.Active.ACTIVE
         )
         .setCharacteristic(
           Tools.Characteristic.VolumeControlType,
+          /* eslint-disable-next-line @typescript-eslint/ban-ts-ignore */
           // @ts-ignore
           Tools.Characteristic.VolumeControlType.RELATIVE
         );
@@ -288,9 +282,9 @@ export default class TV extends Base<TVConfig, Context> {
       this.accessory.addService(speakerService);
     }
 
-    speakerService.getCharacteristic(Tools.Characteristic.VolumeSelector).on(
-      "set",
-      (value: VolumeSelector, callback): void => {
+    speakerService
+      .getCharacteristic(Tools.Characteristic.VolumeSelector)
+      .on("set", (value: VolumeSelector, callback): void => {
         switch (value) {
           case VolumeSelector.INCREMENT:
             this.sendData(["volume", "increment"]);
@@ -302,8 +296,7 @@ export default class TV extends Base<TVConfig, Context> {
             this.log(`Unknown volume control: ${value}`);
         }
         callback();
-      }
-    );
+      });
 
     return speakerService;
   }

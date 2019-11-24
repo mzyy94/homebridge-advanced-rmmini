@@ -53,12 +53,10 @@ export class Frame extends F<Pulse> {
       }
       bitArray.pop();
       const byteArray = bitArray
-        .map(
-          (bits): number[] =>
-            bits.map(
-              ({ width: { high, low } }): number =>
-                high === 1 && low === 3 ? 1 : 0
-            )
+        .map((bits): number[] =>
+          bits.map(({ width: { high, low } }): number =>
+            high === 1 && low === 3 ? 1 : 0
+          )
         )
         .map((bits): string => bits.reverse().join(""))
         .map((bits): number => parseInt(bits, 2));
@@ -70,16 +68,14 @@ export class Frame extends F<Pulse> {
 
     const pulse = [leader];
 
-    [...buffer].forEach(
-      (buf): void => {
-        for (let i = 0; i < 8; i += 1) {
-          // eslint-disable-next-line no-bitwise
-          const isHigh = (buf >>> i) & 0x01;
-          const p = Pulse.fromWidth(1, isHigh ? 3 : 1);
-          pulse.push(p);
-        }
+    [...buffer].forEach((buf): void => {
+      for (let i = 0; i < 8; i += 1) {
+        // eslint-disable-next-line no-bitwise
+        const isHigh = (buf >>> i) & 0x01;
+        const p = Pulse.fromWidth(1, isHigh ? 3 : 1);
+        pulse.push(p);
       }
-    );
+    });
     const trailer = Pulse.fromWidth(1, gap);
     pulse.push(trailer);
 
@@ -188,24 +184,22 @@ export class AEHA {
       (f: FrameData): FrameData => {
         const frame = f;
         if (frame.replacer) {
-          frame.replacer.forEach(
-            (r: Replacer): void => {
-              let v = value[r.name];
-              if (!v) return;
-              if (r.preprocessor) {
-                // eslint-disable-next-line no-new-func
-                const processor = new Function(
-                  r.name,
-                  `return ${r.preprocessor}`
-                );
-                v = processor(v);
-              }
-              frame.data = frame.data.replace(
-                r.target,
-                Buffer.from([v]).toString("hex")
+          frame.replacer.forEach((r: Replacer): void => {
+            let v = value[r.name];
+            if (!v) return;
+            if (r.preprocessor) {
+              // eslint-disable-next-line no-new-func
+              const processor = new Function(
+                r.name,
+                `return ${r.preprocessor}`
               );
+              v = processor(v);
             }
-          );
+            frame.data = frame.data.replace(
+              r.target,
+              Buffer.from([v]).toString("hex")
+            );
+          });
         }
         return frame;
       }

@@ -1,5 +1,5 @@
 import { Tools, createAccessory } from "./accessories";
-import { AccessoryConfig } from "./config";
+import { RootConfig, AccessoryConfig } from "./config";
 import Base from "./accessories/base";
 
 const PLUGIN_NAME = "eremote-hub";
@@ -19,15 +19,19 @@ export const setHomebridgeProperties = ({
 };
 
 export class ERemotePlatform {
-  private log: any;
+  private log: Function;
 
-  private accessories: Map<string, Base<AccessoryConfig, any>>;
+  private accessories: Map<string, Base<AccessoryConfig, unknown>>;
 
-  private api: any;
+  private api: Homebridge.API;
 
-  private config: any;
+  private config: undefined | RootConfig;
 
-  public constructor(log: any, config: any, api: any) {
+  public constructor(
+    log: Function,
+    config: undefined | RootConfig,
+    api: Homebridge.API
+  ) {
     this.log = log;
     this.config = config;
     this.accessories = new Map();
@@ -37,14 +41,12 @@ export class ERemotePlatform {
   }
 
   public configureAccessory(accessory: Homebridge.PlatformAccessory): void {
-    let config: AccessoryConfig | undefined = this.config.accessories.find(
+    let config: AccessoryConfig | undefined = this.config?.accessories.find(
       (acc: AccessoryConfig): boolean => acc.name === accessory.displayName
     );
     if (config === undefined) {
       this.log(
-        `No config of accessory named "${
-          accessory.displayName
-        }" found. This accessory might be removed.`
+        `No config of accessory named "${accessory.displayName}" found. This accessory might be removed.`
       );
       config = accessory.context.config as AccessoryConfig;
     }
@@ -53,7 +55,9 @@ export class ERemotePlatform {
   }
 
   // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
-  public configurationRequestHandler(_context, _request, _callback): void {}
+  public configurationRequestHandler(_context, _request, _callback): void {
+    // NOTE: Nothing to do
+  }
 
   private addAccessory(config: AccessoryConfig): void {
     const { name } = config;
@@ -70,7 +74,7 @@ export class ERemotePlatform {
     }
   }
 
-  private removeAccessory(accessory: Base<AccessoryConfig, any>): void {
+  private removeAccessory(accessory: Base<AccessoryConfig, unknown>): void {
     this.log(
       `Removing accessory ${accessory.currentAccessory.context.name}...`
     );
@@ -81,16 +85,15 @@ export class ERemotePlatform {
 
   private didFinishLaunching(): void {
     this.log("didFinishLaunching");
-    this.config.accessories.forEach(this.addAccessory.bind(this));
+    // eslint-disable-next-line no-unused-expressions
+    this.config?.accessories.forEach(this.addAccessory.bind(this));
 
-    [...this.accessories.entries()].forEach(
-      ([name, accessory]): void => {
-        if (!accessory.currentAccessory.reachable) {
-          this.removeAccessory(accessory);
-          this.accessories.delete(name);
-        }
+    [...this.accessories.entries()].forEach(([name, accessory]): void => {
+      if (!accessory.currentAccessory.reachable) {
+        this.removeAccessory(accessory);
+        this.accessories.delete(name);
       }
-    );
+    });
 
     this.api.updatePlatformAccessories(this.accessories);
   }

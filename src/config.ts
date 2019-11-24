@@ -106,3 +106,7 @@ export type FanConfig = CommonConfig & Fan;
 export type Accessories = Switch | Light | Television | Fan;
 
 export type AccessoryConfig = CommonConfig & Accessories;
+
+export type RootConfig = {
+  accessories: Array<AccessoryConfig>;
+};

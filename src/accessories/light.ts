@@ -20,7 +20,11 @@ export default class Light extends Base<LightConfig, Context> {
 
   private controlledBrightness: number;
 
-  public constructor(config: LightConfig, log: Function, accessory?: any) {
+  public constructor(
+    config: LightConfig,
+    log: Function,
+    accessory?: Homebridge.PlatformAccessory
+  ) {
     super(
       config,
       log,
@@ -45,30 +49,24 @@ export default class Light extends Base<LightConfig, Context> {
 
     service
       .getCharacteristic(Tools.Characteristic.On)
-      .on(
-        "get",
-        (cb: HAPNodeJS.CharacteristicGetCallback): void =>
-          cb(null, this.context.state)
+      .on("get", (cb: HAPNodeJS.CharacteristicGetCallback): void =>
+        cb(null, this.context.state)
       )
       .on("set", this.onSetPowerState.bind(this));
 
     if (this.config.code.dimmer && this.config.code.brighter) {
       service
         .getCharacteristic(Tools.Characteristic.Brightness)
-        .on(
-          "get",
-          (cb: HAPNodeJS.CharacteristicGetCallback): void =>
-            cb(null, this.context.brightness)
+        .on("get", (cb: HAPNodeJS.CharacteristicGetCallback): void =>
+          cb(null, this.context.brightness)
         )
         .on("set", this.onSetBrightness.bind(this));
     }
 
     service
       .getCharacteristic(Tools.Characteristic.ColorTemperature)
-      .on(
-        "get",
-        (cb: HAPNodeJS.CharacteristicGetCallback): void =>
-          cb(null, this.context.colorTemperature)
+      .on("get", (cb: HAPNodeJS.CharacteristicGetCallback): void =>
+        cb(null, this.context.colorTemperature)
       )
       .on("set", this.onSetColorTemperature.bind(this));
   }
@@ -156,9 +154,7 @@ export default class Light extends Base<LightConfig, Context> {
     }
 
     this.log(
-      `${this.name} set colorTemperature: ${
-        this.context.colorTemperature
-      } => ${value}`
+      `${this.name} set colorTemperature: ${this.context.colorTemperature} => ${value}`
     );
 
     const tempCode = Object.keys(this.config.code.temperature)
@@ -188,6 +184,7 @@ export default class Light extends Base<LightConfig, Context> {
     return;
 
     // TODO: Add stepping mode
+    /* eslint-disable-next-line @typescript-eslint/ban-ts-ignore */
     // @ts-ignore
     const step = this.stepping; /* eslint-disable-line no-unreachable */
 
