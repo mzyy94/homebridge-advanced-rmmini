@@ -6,7 +6,8 @@
       "prettier/@typescript-eslint"
     ],
     "rules": {
-      "max-classes-per-file": "off"
+      "max-classes-per-file": "off",
+      "no-bitwise": "off"
     },
     "settings": {
       "import/resolver": {
