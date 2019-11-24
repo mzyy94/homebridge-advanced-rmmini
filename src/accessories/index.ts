@@ -12,6 +12,7 @@ import Light from "./light";
 import TV from "./tv";
 import Fan from "./fan";
 import AC from "./ac";
+import Panasonic from "./ac/panasonic";
 
 export const createAccessory = (
   config: AccessoryConfig,
@@ -27,8 +28,18 @@ export const createAccessory = (
       return new TV(config as TVConfig, log, accessory);
     case "fan":
       return new Fan(config as FanConfig, log, accessory);
-    case "ac":
-      return new AC(config as AirConditionerConfig, log, accessory);
+    case "ac": {
+      const acConfig = config as AirConditionerConfig;
+      if (config.mode === "preset") {
+        switch (acConfig.manufacturer) {
+          case "Panasonic":
+            return new Panasonic(acConfig, log, accessory);
+          default:
+            break;
+        }
+      }
+      return new AC(acConfig, log, accessory);
+    }
     default:
       throw new TypeError("Invalid type of accessory");
   }

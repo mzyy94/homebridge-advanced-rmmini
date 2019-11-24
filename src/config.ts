@@ -29,7 +29,7 @@ export interface CommonConfig {
   model?: string;
   version?: string;
 
-  mode: "raw" | "aeha";
+  mode: "raw" | "preset";
 }
 
 export interface Switch {
